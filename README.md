@@ -40,8 +40,6 @@ Discover repositories updated in the last **24 hours**, **7 days**, or
 |--------------------------|-------------------------------------|
 | ⭐ **Most Starred**       | Descending by stargazer count       |
 | 🍴 **Most Forked**        | Descending by fork count            |
-| 🔀 **Most Open PRs**      | Open pull request count (GraphQL)   |
-| 🐛 **Most Open Issues**   | Open issue count                    |
 | 🕐 **Recently Updated**   | Last push date descending           |
 | ✨ **Best Match**         | GitHub relevance ranking            |
 

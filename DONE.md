@@ -5,6 +5,7 @@
 - [2026-10-31] Added GitHub Actions pipeline (`.github/workflows/ci.yml`) — push/pull_request on Node 22, workflow-level `NODE_OPTIONS=--no-experimental-webstorage`, runs `npm ci`, lint, typecheck, test, build
 
 ## Miscellaneous
+- [2026-10-31] Docs synced with the removed sort options — README sort table and `docs/CODEBASE.md` defect list no longer describe "Most Open PRs"/"Most Open Issues" (files: README.md, docs/CODEBASE.md)
 - [2026-07-24] Added `graphify-out/` to `.gitignore` for knowledge graph output directory
 
 ## Fixes
