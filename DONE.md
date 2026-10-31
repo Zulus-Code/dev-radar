@@ -8,6 +8,7 @@
 - [2026-07-24] Added `graphify-out/` to `.gitignore` for knowledge graph output directory
 
 ## Fixes
+- [2026-10-31] Removed "Most Open PRs" / "Most Open Issues" sort options — GitHub search cannot sort by open PRs and maps "issues" to help-wanted issues, so both lied about ordering; open PR/issue counts on cards are unchanged (files: src/lib/constants.ts, src/lib/utils.ts, src/__tests__/utils.test.ts)
 - [2026-09-24] URL param validation — invalid `timeRange`/`licenseType`/`sort`/`order`/`minStars`/`readmeLanguage`/`developerFilters` values now fall back to defaults instead of leaking into API queries; list params are trimmed/deduped/sorted for stable cache keys; `resetFilters` preserves sort/order (files: src/hooks/useFilters.ts, src/hooks/useSort.ts)
 - [2026-09-24] CollectionsPanel: delete button was nested inside the expand toggle button (invalid interactive nesting) — restructured header into sibling controls (files: src/components/CollectionsPanel.tsx)
 - [2026-09-24] Panel a11y — modal now has `role=dialog`/`aria-modal`/`aria-labelledby`, closes on Escape, and moves focus into the dialog on open (files: src/components/Panel.tsx)

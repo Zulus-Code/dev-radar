@@ -3,7 +3,7 @@ import { TIME_RANGES } from './constants'
 import { OSI_LICENSE_IDS } from './licenseLegend'
 import type { TimeRange } from './constants'
 
-export type SortField = 'stars' | 'forks' | 'updated' | 'pull_requests' | 'issues' | 'best_match'
+export type SortField = 'stars' | 'forks' | 'updated' | 'best_match'
 export type SortOrder = 'asc' | 'desc'
 
 export function formatNumber(num: number): string {
@@ -96,8 +96,6 @@ export function getAPISortField(field: SortField): string | undefined {
     stars: 'stars',
     forks: 'forks',
     updated: 'updated',
-    pull_requests: undefined,
-    issues: 'help-wanted-issues',
     best_match: undefined,
   }
   return mapping[field]

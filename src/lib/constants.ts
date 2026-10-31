@@ -12,8 +12,6 @@ export const SORT_OPTIONS: { field: SortField; label: string; icon: string }[] =
   { field: 'best_match', label: 'Best Match', icon: '✨' },
   { field: 'stars', label: 'Most Starred', icon: '⭐' },
   { field: 'forks', label: 'Most Forked', icon: '🍴' },
-  { field: 'pull_requests', label: 'Most Open PRs', icon: '🔀' },
-  { field: 'issues', label: 'Most Open Issues', icon: '🐛' },
   { field: 'updated', label: 'Recently Updated', icon: '🕐' },
 ] as const
 

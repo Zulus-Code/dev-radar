@@ -181,14 +181,6 @@ describe('getAPISortField', () => {
     expect(getAPISortField('updated')).toBe('updated')
   })
 
-  it('returns undefined for pull_requests', () => {
-    expect(getAPISortField('pull_requests')).toBeUndefined()
-  })
-
-  it('returns help-wanted-issues for issues', () => {
-    expect(getAPISortField('issues')).toBe('help-wanted-issues')
-  })
-
   it('returns undefined for best_match', () => {
     expect(getAPISortField('best_match')).toBeUndefined()
   })
