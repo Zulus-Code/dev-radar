@@ -1,5 +1,8 @@
 # DONE.md — Changelog
 
+## CI & Tooling
+- [2026-10-31] Added GitHub Actions pipeline (`.github/workflows/ci.yml`) — push/pull_request on Node 22, workflow-level `NODE_OPTIONS=--no-experimental-webstorage`, runs `npm ci`, lint, typecheck, test, build
+
 ## Miscellaneous
 - [2026-07-24] Added `graphify-out/` to `.gitignore` for knowledge graph output directory
 
