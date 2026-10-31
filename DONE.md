@@ -1,6 +1,7 @@
 # DONE.md — Changelog
 
 ## CI & Tooling
+- [2026-10-31] Stabilised vitest on Node 26 — `npm test` now runs with `NODE_OPTIONS=--no-experimental-webstorage` because Node's experimental `localStorage` global shadowed jsdom's (56/167 tests failed); added `.nvmrc` (`22`) and `engines: { node: ">=22" }` (files: package.json, .nvmrc)
 - [2026-10-31] Added GitHub Actions pipeline (`.github/workflows/ci.yml`) — push/pull_request on Node 22, workflow-level `NODE_OPTIONS=--no-experimental-webstorage`, runs `npm ci`, lint, typecheck, test, build
 
 ## Miscellaneous

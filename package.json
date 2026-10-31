@@ -9,8 +9,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "test": "vitest run",
+    "test": "NODE_OPTIONS=--no-experimental-webstorage vitest run",
     "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.3",
