@@ -41,7 +41,10 @@ export function formatDecimal(num: number, lang: Lang = 'en'): string {
 }
 
 export function formatRelativeTime(dateString: string, lang: Lang = 'en'): string {
-  return formatDistanceToNow(parseISO(dateString), {
+  const date = parseISO(dateString)
+  // GitHub's pushed_at can be minutes ahead of the local clock; "in 15 minutes" is noise.
+  const safe = date.getTime() > Date.now() ? new Date() : date
+  return formatDistanceToNow(safe, {
     addSuffix: true,
     locale: DATE_FNS_LOCALES[lang],
   })

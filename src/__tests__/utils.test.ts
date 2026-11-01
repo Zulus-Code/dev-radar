@@ -24,6 +24,12 @@ describe('formatNumber', () => {
 })
 
 describe('formatRelativeTime', () => {
+  it('clamps future timestamps to "now" instead of "in N minutes"', () => {
+    const future = new Date(Date.now() + 60 * 60 * 1000).toISOString()
+    expect(formatRelativeTime(future)).not.toContain('in ')
+    expect(formatRelativeTime(future, 'ru')).not.toContain('через')
+  })
+
   it('formats past dates with ago suffix', () => {
     const now = new Date()
     const threeHoursAgo = new Date(now.getTime() - 3 * 60 * 60 * 1000)

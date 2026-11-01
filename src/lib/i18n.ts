@@ -344,7 +344,7 @@ const ru: Record<TranslationKey, string> = {
   'search.aria': 'Поиск репозиториев',
   'minStars.label': 'Мин ⭐',
 
-  'license.openSource': 'Open Source',
+  'license.openSource': 'Открытый код',
   'license.noLicense': 'Без лицензии',
   'license.legendAria': 'Легенда лицензий',
   'license.guideTitle': 'Справка по лицензиям',
