@@ -12,6 +12,7 @@ import TopicChipList from './TopicChipList'
 import EmptyState from './EmptyState'
 import { ChevronUpIcon, TrashIcon, CloseIcon, CollectionIcon } from './Icons'
 import { openExternal } from '../lib/openExternal'
+import { useI18n } from '../hooks/useI18n'
 
 interface CollectionsPanelProps {
   isOpen: boolean
@@ -20,6 +21,7 @@ interface CollectionsPanelProps {
 }
 
 function CollectionsPanel({ isOpen, onClose, onTopicClick }: CollectionsPanelProps) {
+  const { t, lang, tPlural } = useI18n()
   const { prefs, addCollection, deleteCollection, removeFromCollection } = usePersonalization()
   const authRevision = useAuthRevision()
   const [newName, setNewName] = useState('')
@@ -61,10 +63,10 @@ function CollectionsPanel({ isOpen, onClose, onTopicClick }: CollectionsPanelPro
     <Panel
       isOpen={isOpen}
       onClose={onClose}
-      title="Collections"
+      title={t('collections.title')}
       headerExtra={
         <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded-full text-xs font-medium">
-          {prefs.collections.length} collection{prefs.collections.length !== 1 ? 's' : ''}
+          {tPlural('collections.count', prefs.collections.length)}
         </span>
       }
       footer={
@@ -72,33 +74,33 @@ function CollectionsPanel({ isOpen, onClose, onTopicClick }: CollectionsPanelPro
           onClick={() => setShowCreateForm(true)}
           className="w-full px-4 py-2 bg-github-accent/10 text-github-accent rounded-lg hover:bg-github-accent/20 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-github-accent"
         >
-          + New Collection
+          {t('collections.new')}
         </button>
       }
     >
       {prefs.collections.length === 0 && !showCreateForm ? (
         <EmptyState
           icon={<CollectionIcon />}
-          title="No collections yet"
-          description="Create a collection and add repos from the folder icon on any repo card"
+          title={t('collections.empty.title')}
+          description={t('collections.empty.description')}
         />
       ) : (
         <div className="space-y-3">
           {showCreateForm && (
             <div className="p-4 bg-github-dark border border-github-border rounded-lg">
-              <h3 className="text-sm font-medium text-github-text mb-3">New Collection</h3>
+              <h3 className="text-sm font-medium text-github-text mb-3">{t('collections.createHeading')}</h3>
               <input
                 type="text"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder="Collection name"
+                placeholder={t('collections.namePlaceholder')}
                 className="w-full px-3 py-2 bg-github-darker border border-github-border rounded-lg text-sm text-github-text placeholder-github-muted focus:outline-none focus:ring-2 focus:ring-github-accent mb-2"
               />
               <input
                 type="text"
                 value={newDescription}
                 onChange={(e) => setNewDescription(e.target.value)}
-                placeholder="Description (optional)"
+                placeholder={t('collections.descriptionPlaceholder')}
                 className="w-full px-3 py-2 bg-github-darker border border-github-border rounded-lg text-sm text-github-text placeholder-github-muted focus:outline-none focus:ring-2 focus:ring-github-accent mb-3"
               />
               <div className="flex gap-2">
@@ -113,13 +115,13 @@ function CollectionsPanel({ isOpen, onClose, onTopicClick }: CollectionsPanelPro
                   }}
                   className="px-4 py-2 bg-github-accent text-white rounded-lg hover:bg-github-accent/80 text-sm focus:outline-none focus:ring-2 focus:ring-github-accent"
                 >
-                  Create
+                  {t('common.create')}
                 </button>
                 <button
                   onClick={() => setShowCreateForm(false)}
                   className="px-4 py-2 bg-github-border text-github-text rounded-lg hover:bg-github-border/80 text-sm focus:outline-none focus:ring-2 focus:ring-github-accent"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               </div>
             </div>
@@ -145,8 +147,9 @@ function CollectionsPanel({ isOpen, onClose, onTopicClick }: CollectionsPanelPro
                       <p className="text-xs text-github-muted mt-1">{collection.description}</p>
                     )}
                     <p className="text-xs text-github-muted mt-2">
-                      {repoCount} repo{repoCount !== 1 ? 's' : ''} · Updated{' '}
-                      {new Date(collection.updatedAt).toLocaleDateString()}
+                      {tPlural('collections.repoMeta', repoCount, {
+                        date: new Date(collection.updatedAt).toLocaleDateString(lang),
+                      })}
                     </p>
                   </button>
                   <div className="flex items-center gap-2 ml-2">
@@ -154,7 +157,7 @@ function CollectionsPanel({ isOpen, onClose, onTopicClick }: CollectionsPanelPro
                     <button
                       onClick={() => deleteCollection(collection.id)}
                       className="p-1 text-github-muted hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
-                      aria-label={`Delete collection ${collection.name}`}
+                      aria-label={t('collections.delete', { name: collection.name })}
                     >
                       <TrashIcon />
                     </button>
@@ -165,7 +168,7 @@ function CollectionsPanel({ isOpen, onClose, onTopicClick }: CollectionsPanelPro
                   <div className="border-t border-github-border p-4">
                     {repoCount === 0 ? (
                       <p className="text-xs text-github-muted text-center py-4">
-                        No repos yet. Click the 📁 icon on any repo card to add it here.
+                        {t('collections.emptyRepos')}
                       </p>
                     ) : loading ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -216,7 +219,7 @@ function CollectionsPanel({ isOpen, onClose, onTopicClick }: CollectionsPanelPro
                                 <button
                                   onClick={() => removeFromCollection(collection.id, fullName)}
                                   className="flex-shrink-0 p-1 text-github-muted hover:text-red-400 focus:outline-none rounded"
-                                  aria-label={`Remove ${fullName} from collection`}
+                                  aria-label={t('collections.removeRepo', { name: fullName })}
                                 >
                                   <CloseIcon className="w-4 h-4" />
                                 </button>

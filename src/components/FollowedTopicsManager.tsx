@@ -3,6 +3,7 @@ import { usePersonalization } from '../hooks/usePersonalization'
 import Panel from './Panel'
 import EmptyState from './EmptyState'
 import { TagIcon } from './Icons'
+import { useI18n } from '../hooks/useI18n'
 
 interface FollowedTopicsManagerProps {
   isOpen: boolean
@@ -10,11 +11,12 @@ interface FollowedTopicsManagerProps {
 }
 
 function FollowedTopicsManager({ isOpen, onClose }: FollowedTopicsManagerProps) {
+  const { t } = useI18n()
   const { prefs, followTopic, unfollowTopic } = usePersonalization()
   const [newTopic, setNewTopic] = useState('')
 
   return (
-    <Panel isOpen={isOpen} onClose={onClose} title="Followed Topics" maxW="max-w-lg" maxH="max-h-[80vh]">
+    <Panel isOpen={isOpen} onClose={onClose} title={t('followed.title')} maxW="max-w-lg" maxH="max-h-[80vh]">
       <div className="flex gap-2 mb-4">
         <input
           type="text"
@@ -26,7 +28,7 @@ function FollowedTopicsManager({ isOpen, onClose }: FollowedTopicsManagerProps) 
               setNewTopic('')
             }
           }}
-          placeholder="Add a topic to follow..."
+          placeholder={t('followed.placeholder')}
           className="flex-1 px-3 py-2 bg-github-dark border border-github-border rounded-lg text-sm text-github-text placeholder-github-muted focus:outline-none focus:ring-2 focus:ring-github-accent"
         />
         <button
@@ -38,12 +40,16 @@ function FollowedTopicsManager({ isOpen, onClose }: FollowedTopicsManagerProps) 
           }}
           className="px-4 py-2 bg-github-accent text-white rounded-lg hover:bg-github-accent/80 text-sm focus:outline-none focus:ring-2 focus:ring-github-accent"
         >
-          Follow
+          {t('common.follow')}
         </button>
       </div>
 
       {prefs.followedTopics.length === 0 ? (
-        <EmptyState icon={<TagIcon className="w-12 h-12" />} title="No followed topics yet" description="Follow topics to track them here" />
+        <EmptyState
+          icon={<TagIcon className="w-12 h-12" />}
+          title={t('followed.empty.title')}
+          description={t('followed.empty.description')}
+        />
       ) : (
         <div className="flex flex-wrap gap-2">
           {prefs.followedTopics.map((topic) => (
@@ -56,7 +62,7 @@ function FollowedTopicsManager({ isOpen, onClose }: FollowedTopicsManagerProps) 
               <button
                 onClick={() => unfollowTopic(topic)}
                 className="ml-1 text-github-accent/60 hover:text-red-400 focus:outline-none"
-                aria-label={`Unfollow topic ${topic}`}
+                aria-label={t('followed.unfollow', { topic })}
               >
                 ×
               </button>

@@ -1,4 +1,7 @@
 import { formatDistanceToNow, parseISO } from 'date-fns'
+import { enUS, ru } from 'date-fns/locale'
+import type { Locale } from 'date-fns'
+import type { Lang } from './i18n'
 import { TIME_RANGES } from './constants'
 import { OSI_LICENSE_IDS } from './licenseLegend'
 import type { TimeRange } from './constants'
@@ -6,18 +9,42 @@ import type { TimeRange } from './constants'
 export type SortField = 'stars' | 'forks' | 'updated' | 'best_match'
 export type SortOrder = 'asc' | 'desc'
 
-export function formatNumber(num: number): string {
-  if (num >= 1_000_000) {
-    return `${(num / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`
-  }
-  if (num >= 1_000) {
-    return `${(num / 1_000).toFixed(1).replace(/\.0$/, '')}k`
-  }
-  return num.toString()
+const DATE_FNS_LOCALES: Record<Lang, Locale> = { en: enUS, ru }
+
+const compactFormatters = new Map<Lang, Intl.NumberFormat>()
+const decimalFormatters = new Map<Lang, Intl.NumberFormat>()
+
+function compactFormatter(lang: Lang): Intl.NumberFormat {
+  const cached = compactFormatters.get(lang)
+  if (cached) return cached
+  const formatter = new Intl.NumberFormat(lang, { notation: 'compact', maximumFractionDigits: 1 })
+  compactFormatters.set(lang, formatter)
+  return formatter
 }
 
-export function formatRelativeTime(dateString: string): string {
-  return formatDistanceToNow(parseISO(dateString), { addSuffix: true })
+function decimalFormatter(lang: Lang): Intl.NumberFormat {
+  const cached = decimalFormatters.get(lang)
+  if (cached) return cached
+  const formatter = new Intl.NumberFormat(lang)
+  decimalFormatters.set(lang, formatter)
+  return formatter
+}
+
+export function formatNumber(num: number, lang: Lang = 'en'): string {
+  const formatted = compactFormatter(lang).format(num)
+  // English compact notation emits "K"; the app has always shown a lowercase "k".
+  return lang === 'en' ? formatted.replace('K', 'k') : formatted
+}
+
+export function formatDecimal(num: number, lang: Lang = 'en'): string {
+  return decimalFormatter(lang).format(num)
+}
+
+export function formatRelativeTime(dateString: string, lang: Lang = 'en'): string {
+  return formatDistanceToNow(parseISO(dateString), {
+    addSuffix: true,
+    locale: DATE_FNS_LOCALES[lang],
+  })
 }
 
 export function getDateForTimeRange(timeRange: TimeRange): string {

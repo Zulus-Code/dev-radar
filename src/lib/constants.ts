@@ -1,18 +1,20 @@
 import type { SortField } from './utils'
+import type { TranslationKey } from './i18n'
+import type { DeveloperFilter } from '../hooks/useFilters'
 
 export const TIME_RANGES = {
-  day: { label: 'Today', days: 1 },
-  week: { label: 'This Week', days: 7 },
-  month: { label: 'This Month', days: 30 },
-} as const
+  day: { label: 'timeRange.today', days: 1 },
+  week: { label: 'timeRange.thisWeek', days: 7 },
+  month: { label: 'timeRange.thisMonth', days: 30 },
+} as const satisfies Record<string, { label: TranslationKey; days: number }>
 
 export type TimeRange = keyof typeof TIME_RANGES
 
-export const SORT_OPTIONS: { field: SortField; label: string; icon: string }[] = [
-  { field: 'best_match', label: 'Best Match', icon: '✨' },
-  { field: 'stars', label: 'Most Starred', icon: '⭐' },
-  { field: 'forks', label: 'Most Forked', icon: '🍴' },
-  { field: 'updated', label: 'Recently Updated', icon: '🕐' },
+export const SORT_OPTIONS: { field: SortField; label: TranslationKey; icon: string }[] = [
+  { field: 'best_match', label: 'sort.bestMatch', icon: '✨' },
+  { field: 'stars', label: 'sort.mostStarred', icon: '⭐' },
+  { field: 'forks', label: 'sort.mostForked', icon: '🍴' },
+  { field: 'updated', label: 'sort.recentlyUpdated', icon: '🕐' },
 ] as const
 
 export const COMMON_LICENSES = [
@@ -36,17 +38,58 @@ export const GITHUB_API_BASE = 'https://api.github.com'
 
 export const GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql'
 
-export const DEVELOPER_FILTERS = {
-  beginner_friendly: { label: 'Beginner-friendly', icon: '🌱', description: 'Low complexity, good docs' },
-  good_first_issue: { label: 'Good First Issue', icon: '🎯', description: 'Has good-first-issue labels' },
-  actively_maintained: { label: 'Actively Maintained', icon: '🔧', description: 'Recent commits, active contributors' },
-  solo_maintained: { label: 'Solo Project', icon: '👤', description: 'Single maintainer' },
-  production_ready: { label: 'Production Ready', icon: '🚀', description: 'Stable, well-tested, widely used' },
-  ai_related: { label: 'AI/ML', icon: '🤖', description: 'Artificial intelligence / machine learning' },
-  indie_project: { label: 'Indie Project', icon: '🎨', description: 'Small, creative, independent' },
-  new_exploding: { label: 'New & Exploding', icon: '💥', description: 'Recently created projects with stars' },
-  low_competition: { label: 'Low Competition', icon: '💎', description: 'Undiscovered gems' },
-  enterprise_grade: { label: 'Enterprise', icon: '🏢', description: 'Large-scale, robust, corporate use' },
-} as const
-
-
+export const DEVELOPER_FILTERS: Record<
+  DeveloperFilter,
+  { label: TranslationKey; icon: string; description: TranslationKey }
+> = {
+  beginner_friendly: {
+    label: 'devFilter.beginnerFriendly.label',
+    icon: '🌱',
+    description: 'devFilter.beginnerFriendly.description',
+  },
+  good_first_issue: {
+    label: 'devFilter.goodFirstIssue.label',
+    icon: '🎯',
+    description: 'devFilter.goodFirstIssue.description',
+  },
+  actively_maintained: {
+    label: 'devFilter.activelyMaintained.label',
+    icon: '🔧',
+    description: 'devFilter.activelyMaintained.description',
+  },
+  solo_maintained: {
+    label: 'devFilter.soloMaintained.label',
+    icon: '👤',
+    description: 'devFilter.soloMaintained.description',
+  },
+  production_ready: {
+    label: 'devFilter.productionReady.label',
+    icon: '🚀',
+    description: 'devFilter.productionReady.description',
+  },
+  ai_related: {
+    label: 'devFilter.aiRelated.label',
+    icon: '🤖',
+    description: 'devFilter.aiRelated.description',
+  },
+  indie_project: {
+    label: 'devFilter.indieProject.label',
+    icon: '🎨',
+    description: 'devFilter.indieProject.description',
+  },
+  new_exploding: {
+    label: 'devFilter.newExploding.label',
+    icon: '💥',
+    description: 'devFilter.newExploding.description',
+  },
+  low_competition: {
+    label: 'devFilter.lowCompetition.label',
+    icon: '💎',
+    description: 'devFilter.lowCompetition.description',
+  },
+  enterprise_grade: {
+    label: 'devFilter.enterpriseGrade.label',
+    icon: '🏢',
+    description: 'devFilter.enterpriseGrade.description',
+  },
+}

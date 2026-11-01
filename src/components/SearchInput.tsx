@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { SearchIcon } from './Icons'
+import { useI18n } from '../hooks/useI18n'
 
 interface SearchInputProps {
   value: string
@@ -7,6 +8,7 @@ interface SearchInputProps {
 }
 
 function SearchInput({ value, onChange }: SearchInputProps) {
+  const { t } = useI18n()
   const [inputValue, setInputValue] = useState(value)
   const [prevValue, setPrevValue] = useState(value)
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -34,9 +36,9 @@ function SearchInput({ value, onChange }: SearchInputProps) {
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        placeholder="Search repositories..."
+        placeholder={t('search.placeholder')}
         className="w-full pl-10 pr-4 py-2 bg-github-darker border border-github-border rounded-lg text-github-text placeholder-github-muted focus:outline-none focus:ring-2 focus:ring-github-accent focus:border-transparent"
-        aria-label="Search repositories"
+        aria-label={t('search.aria')}
       />
     </div>
   )

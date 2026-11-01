@@ -5,6 +5,7 @@ import { useFilters } from '../hooks/useFilters'
 import { useSort } from '../hooks/useSort'
 import { useRepos } from '../hooks/useRepos'
 import { useTheme } from '../hooks/useTheme'
+import { useI18n } from '../hooks/useI18n'
 import { usePersonalization } from '../hooks/usePersonalization'
 import { useAuthRevision } from '../hooks/useAuth'
 import { SORT_OPTIONS } from '../lib/constants'
@@ -27,6 +28,7 @@ function Home() {
   const { filters, updateFilters, resetFilters, activeFilterCount } = useFilters()
   const { sort, setSort, toggleOrder } = useSort()
   const { theme, toggleTheme } = useTheme()
+  const { t, lang } = useI18n()
   const { prefs } = usePersonalization()
   const authRevision = useAuthRevision()
   const [activePanel, setActivePanel] = useState<PanelId | null>(null)
@@ -102,7 +104,7 @@ function Home() {
             <button
               onClick={() => setShowSidebar(true)}
               className="lg:hidden p-1.5 text-github-muted hover:text-github-text rounded-lg focus:outline-none focus:ring-2 focus:ring-github-accent"
-              aria-label="Open filters"
+              aria-label={t('home.openFilters')}
             >
               <MenuIcon className="w-5 h-5" />
             </button>
@@ -116,18 +118,18 @@ function Home() {
               <span className="text-sm hidden lg:inline">
                 {displayRateLimit.remaining > 0 ? (
                   <span className={displayRateLimit.remaining <= 100 ? 'text-red-400' : ''}>
-                    API: {formatNumber(displayRateLimit.remaining)} remaining
+                    {t('home.rateLimitRemaining', { remaining: formatNumber(displayRateLimit.remaining, lang) })}
                   </span>
                 ) : (
-                  <span className="text-red-400">Rate limit exceeded</span>
+                  <span className="text-red-400">{t('home.rateLimitExceeded')}</span>
                 )}
               </span>
             )}
             <button
               onClick={() => setActivePanel('bookmarks')}
               className="relative p-2 text-github-muted hover:text-github-text focus:outline-none focus:ring-2 focus:ring-github-accent rounded-lg hidden sm:block"
-              aria-label="Bookmarks"
-              title="Bookmarks"
+              aria-label={t('home.bookmarks')}
+              title={t('home.bookmarks')}
             >
               <BookmarkIcon />
               <BadgeCount count={prefs.bookmarks.length} color="yellow" />
@@ -135,8 +137,8 @@ function Home() {
             <button
               onClick={() => setActivePanel('collections')}
               className="relative p-2 text-github-muted hover:text-github-text focus:outline-none focus:ring-2 focus:ring-github-accent rounded-lg hidden sm:block"
-              aria-label="Collections"
-              title="Collections"
+              aria-label={t('home.collections')}
+              title={t('home.collections')}
             >
               <FolderIcon />
               <BadgeCount count={prefs.collections.length} color="blue" />
@@ -144,8 +146,8 @@ function Home() {
             <button
               onClick={() => setActivePanel('followed')}
               className="relative p-2 text-github-muted hover:text-github-text focus:outline-none focus:ring-2 focus:ring-github-accent rounded-lg hidden sm:block"
-              aria-label="Followed topics"
-              title="Followed topics"
+              aria-label={t('home.followedTopics')}
+              title={t('home.followedTopics')}
             >
               <TagIcon className="w-5 h-5" />
               <BadgeCount count={prefs.followedTopics.length} color="green" />
@@ -153,8 +155,8 @@ function Home() {
             <button
               onClick={() => setActivePanel('ignore')}
               className="relative p-2 text-github-muted hover:text-github-text focus:outline-none focus:ring-2 focus:ring-github-accent rounded-lg hidden sm:block"
-              aria-label="Ignore list"
-              title="Ignore list"
+              aria-label={t('home.ignoreList')}
+              title={t('home.ignoreList')}
             >
               <NoEntryIcon className="w-5 h-5" />
               <BadgeCount
@@ -165,14 +167,14 @@ function Home() {
             <button
               onClick={toggleTheme}
               className="p-2 text-github-muted hover:text-github-text focus:outline-none focus:ring-2 focus:ring-github-accent rounded-lg"
-              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              aria-label={t('theme.switchTo', { mode: t(theme === 'dark' ? 'theme.light' : 'theme.dark') })}
             >
               {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
             </button>
             <Link
               to="/settings"
               className="p-2 text-github-muted hover:text-github-text focus:outline-none focus:ring-2 focus:ring-github-accent rounded-lg"
-              aria-label="Settings"
+              aria-label={t('home.settings')}
             >
               <SettingsIcon className="w-5 h-5" />
             </Link>
@@ -187,26 +189,26 @@ function Home() {
           <div className="flex flex-wrap items-center gap-2 mb-4">
             <div className="flex items-center gap-2">
               <label htmlFor="sort-select-main" className="sr-only">
-                Sort by
+                {t('home.sortBy')}
               </label>
               <select
                 id="sort-select-main"
                 value={sort.field}
                 onChange={(e) => setSort({ field: e.target.value as SortState['field'] })}
                 className="px-3 py-1.5 bg-github-darker border border-github-border rounded-lg text-sm text-github-text focus:outline-none focus:ring-2 focus:ring-github-accent cursor-pointer"
-                aria-label="Sort repositories by"
+                aria-label={t('home.sortAria')}
               >
                 {SORT_OPTIONS.map((option) => (
                   <option key={option.field} value={option.field}>
-                    {option.icon} {option.label}
+                    {option.icon} {t(option.label)}
                   </option>
                 ))}
               </select>
               <button
                 onClick={toggleOrder}
                 className="p-1.5 bg-github-darker border border-github-border rounded-lg text-github-muted hover:text-github-text focus:outline-none focus:ring-2 focus:ring-github-accent"
-                aria-label={`Switch to ${sort.order === 'asc' ? 'descending' : 'ascending'} order`}
-                title={sort.order === 'asc' ? 'Ascending' : 'Descending'}
+                aria-label={t('home.switchOrder', { order: t(sort.order === 'asc' ? 'home.descending' : 'home.ascending') })}
+                title={t(sort.order === 'asc' ? 'home.ascending' : 'home.descending')}
               >
                 {sort.order === 'asc' ? <ChevronUpIcon /> : <ChevronDownIcon />}
               </button>
@@ -218,7 +220,7 @@ function Home() {
                 onClick={resetFilters}
                 className="text-sm text-github-accent hover:underline focus:outline-none"
               >
-                Reset filters ({activeFilterCount})
+                {t('home.resetFilters', { count: activeFilterCount })}
               </button>
             )}
           </div>
@@ -227,22 +229,21 @@ function Home() {
             <div className="p-4 bg-red-900/20 border border-red-800 rounded-xl text-center mb-6">
               <p className="text-red-400 font-medium mb-2">
                 {isAuthError
-                  ? 'GitHub token is invalid or expired'
+                  ? t('error.auth')
                   : isRateLimitError
-                    ? 'GitHub API rate limit exceeded'
-                    : 'Failed to load repositories'}
+                    ? t('error.rateLimit')
+                    : t('error.loadRepos')}
               </p>
               {isAuthError && (
                 <>
                   <p className="text-sm text-github-muted mb-3">
-                    GitHub rejected your saved Personal Access Token (401 Bad credentials).
-                    Update or remove it in Settings.
+                    {t('error.authDetail')}
                   </p>
                   <Link
                     to="/settings"
                     className="inline-block px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                   >
-                    Open Settings
+                    {t('home.openSettings')}
                   </Link>
                 </>
               )}
@@ -250,14 +251,14 @@ function Home() {
                 <>
                   {isRateLimitError && rateLimit && (
                     <p className="text-sm text-github-muted mb-3">
-                      Resets at {new Date(rateLimit.reset * 1000).toLocaleTimeString()}
+                      {t('error.resetsAt', { time: new Date(rateLimit.reset * 1000).toLocaleTimeString(lang) })}
                     </p>
                   )}
                   <button
                     onClick={handleRetry}
                     className="px-4 py-2 bg-red-800 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                   >
-                    Retry
+                    {t('common.retry')}
                   </button>
                 </>
               )}

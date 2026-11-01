@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useI18n } from '../hooks/useI18n'
 
 interface MinStarsInputProps {
   value: number
@@ -10,6 +11,7 @@ function formatValue(value: number): string {
 }
 
 function MinStarsInput({ value, onChange }: MinStarsInputProps) {
+  const { t } = useI18n()
   const [draft, setDraft] = useState(() => formatValue(value))
   const [prevValue, setPrevValue] = useState(value)
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
@@ -35,7 +37,7 @@ function MinStarsInput({ value, onChange }: MinStarsInputProps) {
   return (
     <>
       <label htmlFor="min-stars" className="text-sm text-github-muted">
-        Min ⭐
+        {t('minStars.label')}
       </label>
       <input
         id="min-stars"

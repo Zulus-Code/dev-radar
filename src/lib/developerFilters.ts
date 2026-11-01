@@ -1,5 +1,22 @@
 import type { Repository, GraphQLRepositoryEnrichment, EnrichmentFields } from '../types/github'
 import type { DeveloperFilter } from '../hooks/useFilters'
+import { translate, translatePlural } from './i18n'
+import type { Lang, PluralKey, TranslationKey } from './i18n'
+
+type BadgeLabel =
+  | { key: TranslationKey }
+  | { pluralKey: PluralKey; count: number }
+
+interface BadgeSpec {
+  label: BadgeLabel
+  icon: string
+  color: string
+}
+
+interface EvaluatedFilter {
+  matches: boolean
+  badge?: BadgeSpec
+}
 
 interface DeveloperFilterResult {
   matches: boolean
@@ -38,11 +55,34 @@ export function requiresTokenFor(filter: DeveloperFilter): boolean {
   return Object.values(fields).some(Boolean)
 }
 
+function renderLabel(lang: Lang, label: BadgeLabel): string {
+  return 'pluralKey' in label
+    ? translatePlural(lang, label.pluralKey, label.count)
+    : translate(lang, label.key)
+}
+
 export function evaluateDeveloperFilter(
   filter: DeveloperFilter,
   repo: Repository,
   enrichment?: GraphQLRepositoryEnrichment,
+  lang: Lang = 'en',
 ): DeveloperFilterResult {
+  const result = evaluate(filter, repo, enrichment)
+  return {
+    matches: result.matches,
+    badge: result.badge && {
+      label: renderLabel(lang, result.badge.label),
+      icon: result.badge.icon,
+      color: result.badge.color,
+    },
+  }
+}
+
+function evaluate(
+  filter: DeveloperFilter,
+  repo: Repository,
+  enrichment?: GraphQLRepositoryEnrichment,
+): EvaluatedFilter {
   switch (filter) {
     case 'beginner_friendly':
       return evaluateBeginnerFriendly(repo)
@@ -71,7 +111,7 @@ export function evaluateDeveloperFilter(
 
 function evaluateBeginnerFriendly(
   repo: Repository,
-): DeveloperFilterResult {
+): EvaluatedFilter {
   const hasBeginnerTopics = repo.topics.some((t) =>
     ['beginner-friendly', 'tutorial', 'learning', 'education', 'examples', 'good-first-issue', 'beginner'].includes(t),
   )
@@ -82,14 +122,14 @@ function evaluateBeginnerFriendly(
 
   return {
     matches,
-    badge: matches ? { label: 'Beginner-friendly', icon: '🌱', color: 'text-green-400' } : undefined,
+    badge: matches ? { label: { key: 'devBadge.beginnerFriendly' }, icon: '🌱', color: 'text-green-400' } : undefined,
   }
 }
 
 function evaluateGoodFirstIssue(
   repo: Repository,
   enrichment?: GraphQLRepositoryEnrichment,
-): DeveloperFilterResult {
+): EvaluatedFilter {
   const goodFirstIssues = enrichment?.goodFirstIssueCount ?? 0
   const hasGoodFirstTopic = repo.topics.some((t) =>
     ['good-first-issue', 'beginner-friendly', 'hacktoberfest'].includes(t),
@@ -101,9 +141,9 @@ function evaluateGoodFirstIssue(
   return {
     matches,
     badge: goodFirstIssues > 0
-      ? { label: `${goodFirstIssues} good first issues`, icon: '🎯', color: 'text-blue-400' }
+      ? { label: { pluralKey: 'devBadge.goodFirstIssues', count: goodFirstIssues }, icon: '🎯', color: 'text-blue-400' }
       : matches
-        ? { label: 'Has open issues', icon: '🎯', color: 'text-blue-400' }
+        ? { label: { key: 'devBadge.hasOpenIssues' }, icon: '🎯', color: 'text-blue-400' }
         : undefined,
   }
 }
@@ -111,7 +151,7 @@ function evaluateGoodFirstIssue(
 function evaluateActivelyMaintained(
   repo: Repository,
   enrichment?: GraphQLRepositoryEnrichment,
-): DeveloperFilterResult {
+): EvaluatedFilter {
   const daysSincePush = Math.floor(
     (Date.now() - new Date(repo.pushedAt).getTime()) / (1000 * 60 * 60 * 24),
   )
@@ -123,7 +163,7 @@ function evaluateActivelyMaintained(
   return {
     matches,
     badge: matches
-      ? { label: daysSincePush <= 7 ? 'Active this week' : 'Active this month', icon: '🔧', color: 'text-yellow-400' }
+      ? { label: { key: daysSincePush <= 7 ? 'devBadge.activeThisWeek' : 'devBadge.activeThisMonth' }, icon: '🔧', color: 'text-yellow-400' }
       : undefined,
   }
 }
@@ -131,19 +171,19 @@ function evaluateActivelyMaintained(
 function evaluateSoloMaintained(
   repo: Repository,
   enrichment?: GraphQLRepositoryEnrichment,
-): DeveloperFilterResult {
+): EvaluatedFilter {
   const contributorCount = enrichment?.contributorCount ?? 1
   const matches = contributorCount <= 3 && repo.stars > 50 && repo.stars < 5000
 
   return {
     matches,
-    badge: matches ? { label: 'Solo/small team', icon: '👤', color: 'text-purple-400' } : undefined,
+    badge: matches ? { label: { key: 'devBadge.soloSmallTeam' }, icon: '👤', color: 'text-purple-400' } : undefined,
   }
 }
 
 function evaluateProductionReady(
   repo: Repository,
-): DeveloperFilterResult {
+): EvaluatedFilter {
   const isStable = repo.stars > 500 && repo.forks > 50
   const hasLicense = repo.license !== null
   const hasTopics = repo.topics.length > 0
@@ -152,13 +192,13 @@ function evaluateProductionReady(
 
   return {
     matches,
-    badge: matches ? { label: 'Production ready', icon: '🚀', color: 'text-emerald-400' } : undefined,
+    badge: matches ? { label: { key: 'devBadge.productionReady' }, icon: '🚀', color: 'text-emerald-400' } : undefined,
   }
 }
 
 function evaluateAIRelated(
   repo: Repository,
-): DeveloperFilterResult {
+): EvaluatedFilter {
   const aiTopics = repo.topics.filter((t) =>
     [
       'machine-learning',
@@ -187,14 +227,14 @@ function evaluateAIRelated(
 
   return {
     matches,
-    badge: matches ? { label: 'AI/ML', icon: '🤖', color: 'text-cyan-400' } : undefined,
+    badge: matches ? { label: { key: 'devBadge.aiRelated' }, icon: '🤖', color: 'text-cyan-400' } : undefined,
   }
 }
 
 function evaluateIndieProject(
   repo: Repository,
   enrichment?: GraphQLRepositoryEnrichment,
-): DeveloperFilterResult {
+): EvaluatedFilter {
   const indieTopics = repo.topics.filter((t) =>
     ['indie', 'creative', 'art', 'game', 'music', 'pixel', 'fun', 'experimental', 'toy', 'hobby', 'personal'].includes(t),
   )
@@ -206,13 +246,13 @@ function evaluateIndieProject(
 
   return {
     matches,
-    badge: matches ? { label: 'Indie project', icon: '🎨', color: 'text-pink-400' } : undefined,
+    badge: matches ? { label: { key: 'devBadge.indieProject' }, icon: '🎨', color: 'text-pink-400' } : undefined,
   }
 }
 
 function evaluateNewExploding(
   repo: Repository,
-): DeveloperFilterResult {
+): EvaluatedFilter {
   const repoAge = Math.floor(
     (Date.now() - new Date(repo.createdAt).getTime()) / (1000 * 60 * 60 * 24),
   )
@@ -223,25 +263,25 @@ function evaluateNewExploding(
 
   return {
     matches,
-    badge: matches ? { label: 'Recently created', icon: '💥', color: 'text-orange-400' } : undefined,
+    badge: matches ? { label: { key: 'devBadge.recentlyCreated' }, icon: '💥', color: 'text-orange-400' } : undefined,
   }
 }
 
 function evaluateLowCompetition(
   repo: Repository,
-): DeveloperFilterResult {
+): EvaluatedFilter {
   const matches = repo.license !== null
 
   return {
     matches,
-    badge: matches ? { label: 'Low competition', icon: '💎', color: 'text-indigo-400' } : undefined,
+    badge: matches ? { label: { key: 'devBadge.lowCompetition' }, icon: '💎', color: 'text-indigo-400' } : undefined,
   }
 }
 
 function evaluateEnterpriseGrade(
   repo: Repository,
   enrichment?: GraphQLRepositoryEnrichment,
-): DeveloperFilterResult {
+): EvaluatedFilter {
   const enterpriseTopics = repo.topics.filter((t) =>
     [
       'enterprise',
@@ -267,6 +307,6 @@ function evaluateEnterpriseGrade(
 
   return {
     matches,
-    badge: matches ? { label: 'Enterprise grade', icon: '🏢', color: 'text-slate-400' } : undefined,
+    badge: matches ? { label: { key: 'devBadge.enterpriseGrade' }, icon: '🏢', color: 'text-slate-400' } : undefined,
   }
 }

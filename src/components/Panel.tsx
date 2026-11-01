@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useEffect, useId, useRef } from 'react'
 import { CloseIcon } from './Icons'
+import { useI18n } from '../hooks/useI18n'
 
 interface PanelProps {
   isOpen: boolean
@@ -23,6 +24,7 @@ function Panel({
   footer,
   headerExtra,
 }: PanelProps) {
+  const { t } = useI18n()
   const titleId = useId()
   const dialogRef = useRef<HTMLDivElement>(null)
   const onCloseRef = useRef(onClose)
@@ -79,7 +81,7 @@ function Panel({
           <button
             onClick={onClose}
             className="p-1 text-github-muted hover:text-github-text focus:outline-none focus:ring-2 focus:ring-github-accent rounded"
-            aria-label={`Close ${title} panel`}
+            aria-label={t('panel.close', { title })}
           >
             <CloseIcon />
           </button>

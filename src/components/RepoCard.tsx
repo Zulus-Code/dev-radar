@@ -1,10 +1,11 @@
 import type { Repository } from '../types/github'
 import LanguageBadge from './LanguageBadge'
 import LicenseBadge from './LicenseBadge'
-import { formatNumber, formatRelativeTime } from '../lib/utils'
+import { formatDecimal, formatNumber, formatRelativeTime } from '../lib/utils'
 import { evaluateDeveloperFilter } from '../lib/developerFilters'
 import type { DeveloperFilter } from '../hooks/useFilters'
 import { useBookmarked, useIsInAnyCollection, useCollections } from '../hooks/usePersonalization'
+import { useI18n } from '../hooks/useI18n'
 import { toggleBookmark, addToCollection } from '../lib/userPreferences'
 import { useClickOutside } from '../hooks/useClickOutside'
 import { useState, useRef, useMemo, memo } from 'react'
@@ -19,6 +20,7 @@ interface RepoCardProps {
 }
 
 const RepoCard = memo(function RepoCard({ repo, onTopicClick, activeDeveloperFilters = [] }: RepoCardProps) {
+  const { t, lang } = useI18n()
   const bookmarked = useBookmarked(repo.fullName)
   const isInAnyCollection = useIsInAnyCollection(repo.fullName)
   const collections = useCollections()
@@ -30,9 +32,9 @@ const RepoCard = memo(function RepoCard({ repo, onTopicClick, activeDeveloperFil
   const developerBadges = useMemo(
     () =>
       activeDeveloperFilters
-        .map((filter) => evaluateDeveloperFilter(filter, repo))
+        .map((filter) => evaluateDeveloperFilter(filter, repo, undefined, lang))
         .filter((result) => result.badge),
-    [activeDeveloperFilters, repo],
+    [activeDeveloperFilters, repo, lang],
   )
 
   return (
@@ -40,7 +42,7 @@ const RepoCard = memo(function RepoCard({ repo, onTopicClick, activeDeveloperFil
       <div className="flex items-start gap-3 mb-3">
         <img
           src={repo.owner.avatarUrl}
-          alt={`${repo.owner.login} avatar`}
+          alt={t('repo.avatarAlt', { login: repo.owner.login })}
           className="w-10 h-10 rounded-full flex-shrink-0"
           loading="lazy"
         />
@@ -67,18 +69,18 @@ const RepoCard = memo(function RepoCard({ repo, onTopicClick, activeDeveloperFil
                       ? 'text-blue-400 hover:text-blue-300'
                       : 'text-github-muted hover:text-github-text'
                   }`}
-                  aria-label="Add to collection"
-                  title={isInAnyCollection ? 'In collection(s)' : 'Add to collection'}
+                  aria-label={t('repo.addToCollection')}
+                  title={t(isInAnyCollection ? 'repo.inCollections' : 'repo.addToCollection')}
                 >
                   <FolderIcon filled={isInAnyCollection} />
                 </button>
                 {showCollectionDropdown && (
                   <div className="absolute right-0 z-20 mt-2 w-56 bg-github-dark border border-github-border rounded-lg shadow-xl overflow-hidden">
                     <div className="p-2 border-b border-github-border">
-                      <p className="text-xs text-github-muted font-medium">Add to collection</p>
+                      <p className="text-xs text-github-muted font-medium">{t('repo.addToCollection')}</p>
                     </div>
                     {collections.length === 0 ? (
-                      <div className="p-3 text-xs text-github-muted text-center">No collections yet</div>
+                      <div className="p-3 text-xs text-github-muted text-center">{t('repo.noCollections')}</div>
                     ) : (
                       <div className="max-h-48 overflow-y-auto">
                         {collections.map((collection) => {
@@ -111,8 +113,8 @@ const RepoCard = memo(function RepoCard({ repo, onTopicClick, activeDeveloperFil
                     ? 'text-yellow-400 hover:text-yellow-300'
                     : 'text-github-muted hover:text-github-text'
                 }`}
-                aria-label={bookmarked ? 'Remove bookmark' : 'Bookmark this repo'}
-                title={bookmarked ? 'Bookmarked' : 'Bookmark'}
+                aria-label={t(bookmarked ? 'repo.removeBookmark' : 'repo.bookmarkThis')}
+                title={t(bookmarked ? 'repo.bookmarked' : 'repo.bookmark')}
               >
                 <BookmarkIcon className="w-5 h-5" filled={bookmarked} />
               </button>
@@ -144,26 +146,26 @@ const RepoCard = memo(function RepoCard({ repo, onTopicClick, activeDeveloperFil
       )}
 
       <div className="flex flex-wrap items-center gap-4 text-sm text-github-muted mb-3">
-        <span className="flex items-center gap-1" title={`${repo.stars} stars`}>
+        <span className="flex items-center gap-1" title={t('repo.starsTitle', { count: formatDecimal(repo.stars, lang) })}>
           <StarIcon />
-          {formatNumber(repo.stars)}
+          {formatNumber(repo.stars, lang)}
         </span>
-        <span className="flex items-center gap-1" title={`${repo.forks} forks`}>
+        <span className="flex items-center gap-1" title={t('repo.forksTitle', { count: formatDecimal(repo.forks, lang) })}>
           <ForkIcon />
-          {formatNumber(repo.forks)}
+          {formatNumber(repo.forks, lang)}
         </span>
         {repo.openPRs > 0 && (
-          <span className="flex items-center gap-1" title={`${repo.openPRs} open PRs`}>
+          <span className="flex items-center gap-1" title={t('repo.openPRsTitle', { count: formatDecimal(repo.openPRs, lang) })}>
             <PullRequestIcon />
-            {formatNumber(repo.openPRs)}
+            {formatNumber(repo.openPRs, lang)}
           </span>
         )}
-        <span className="flex items-center gap-1" title={`${repo.openIssues} open issues`}>
+        <span className="flex items-center gap-1" title={t('repo.openIssuesTitle', { count: formatDecimal(repo.openIssues, lang) })}>
           <IssueIcon />
-          {formatNumber(repo.openIssues)}
+          {formatNumber(repo.openIssues, lang)}
         </span>
         <span className="ml-auto text-xs" title={repo.pushedAt}>
-          {formatRelativeTime(repo.pushedAt)}
+          {formatRelativeTime(repo.pushedAt, lang)}
         </span>
       </div>
 

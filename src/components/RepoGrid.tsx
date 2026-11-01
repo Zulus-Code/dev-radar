@@ -2,6 +2,7 @@ import { useEffect, useRef, memo } from 'react'
 import type { Repository } from '../types/github'
 import type { DeveloperFilter } from '../hooks/useFilters'
 import RepoCard from './RepoCard'
+import { useI18n } from '../hooks/useI18n'
 import EmptyState from './EmptyState'
 import { SadFaceIcon } from './Icons'
 
@@ -28,6 +29,7 @@ const RepoGrid = memo(function RepoGrid({
   onTopicClick,
   activeDeveloperFilters = [],
 }: RepoGridProps) {
+  const { t } = useI18n()
   const sentinelRef = useRef<HTMLDivElement>(null)
   const fetchNextPageRef = useRef(fetchNextPage)
 
@@ -68,8 +70,8 @@ const RepoGrid = memo(function RepoGrid({
         <div className="space-y-4">
           <EmptyState
             icon={<SadFaceIcon />}
-            title="No matches on the loaded pages"
-            description="Repositories were fetched but filtered out. Load more pages to keep searching."
+            title={t('grid.noMatches.title')}
+            description={t('grid.noMatches.description')}
           />
           <div className="text-center">
             <button
@@ -77,13 +79,19 @@ const RepoGrid = memo(function RepoGrid({
               disabled={isFetchingNextPage}
               className="px-4 py-2 bg-github-accent text-white rounded-lg hover:bg-github-accent/80 focus:outline-none focus:ring-2 focus:ring-github-accent disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isFetchingNextPage ? 'Searching…' : 'Search more repositories'}
+              {isFetchingNextPage ? t('grid.searching') : t('grid.searchMore')}
             </button>
           </div>
         </div>
       )
     }
-    return <EmptyState icon={<SadFaceIcon />} title="No repositories found" description="Try adjusting your filters or search terms" />
+    return (
+      <EmptyState
+        icon={<SadFaceIcon />}
+        title={t('grid.empty.title')}
+        description={t('grid.empty.description')}
+      />
+    )
   }
 
   return (
@@ -103,7 +111,7 @@ const RepoGrid = memo(function RepoGrid({
             disabled={isFetchingNextPage}
             className="px-4 py-2 bg-github-darker border border-github-border text-github-text rounded-lg hover:border-github-accent focus:outline-none focus:ring-2 focus:ring-github-accent disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isFetchingNextPage ? 'Loading…' : 'Load more repositories'}
+            {isFetchingNextPage ? t('grid.loadingMore') : t('grid.loadMore')}
           </button>
         </div>
       )}

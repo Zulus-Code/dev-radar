@@ -5,6 +5,7 @@ import { useAuthRevision } from '../hooks/useAuth'
 import { fetchRepoByFullName } from '../lib/github'
 import type { Repository } from '../types/github'
 import { formatRelativeTime } from '../lib/utils'
+import { useI18n } from '../hooks/useI18n'
 import LanguageBadge from './LanguageBadge'
 import LicenseBadge from './LicenseBadge'
 import Panel from './Panel'
@@ -21,6 +22,7 @@ interface BookmarksPanelProps {
 }
 
 function BookmarksPanel({ isOpen, onClose, onTopicClick }: BookmarksPanelProps) {
+  const { t, lang } = useI18n()
   const { prefs, toggleBookmark } = usePersonalization()
   const authRevision = useAuthRevision()
 
@@ -51,18 +53,18 @@ function BookmarksPanel({ isOpen, onClose, onTopicClick }: BookmarksPanelProps) 
     <Panel
       isOpen={isOpen}
       onClose={onClose}
-      title="Bookmarks"
+      title={t('bookmarks.title')}
       headerExtra={
         <span className="px-2 py-0.5 bg-github-accent/20 text-github-accent rounded-full text-xs font-medium">
-          {prefs.bookmarks.length} saved
+          {t('bookmarks.savedCount', { count: prefs.bookmarks.length })}
         </span>
       }
     >
       {prefs.bookmarks.length === 0 ? (
         <EmptyState
           icon={<BookmarkOutlineIcon />}
-          title="No bookmarks yet"
-          description="Click the bookmark icon on any repo to save it here"
+          title={t('bookmarks.empty.title')}
+          description={t('bookmarks.empty.description')}
         />
       ) : loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -113,7 +115,7 @@ function BookmarksPanel({ isOpen, onClose, onTopicClick }: BookmarksPanelProps) 
                   <button
                     onClick={() => toggleBookmark(bookmark.fullName)}
                     className="flex-shrink-0 p-1 text-yellow-400 hover:text-yellow-300 focus:outline-none rounded"
-                    aria-label="Remove bookmark"
+                    aria-label={t('bookmarks.remove')}
                   >
                     <BookmarkIcon className="w-4 h-4" filled />
                   </button>
@@ -136,7 +138,7 @@ function BookmarksPanel({ isOpen, onClose, onTopicClick }: BookmarksPanelProps) 
                   <p className="text-xs text-github-muted mt-2 italic">"{bookmark.note}"</p>
                 )}
                 <p className="text-xs text-github-muted/60 mt-1">
-                  Saved {formatRelativeTime(bookmark.addedAt)}
+                  {t('bookmarks.savedAt', { time: formatRelativeTime(bookmark.addedAt, lang) })}
                 </p>
               </div>
             )

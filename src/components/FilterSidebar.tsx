@@ -4,6 +4,7 @@ import { TIME_RANGES, COMMON_LICENSES, DEVELOPER_FILTERS } from '../lib/constant
 import type { TimeRange } from '../lib/constants'
 import type { DeveloperFilter } from '../hooks/useFilters'
 import { requiresTokenFor } from '../lib/developerFilters'
+import { useI18n } from '../hooks/useI18n'
 import SearchInput from './SearchInput'
 import LicenseLegend from './LicenseLegend'
 import { LANGUAGE_COLORS } from '../lib/languageColors'
@@ -46,6 +47,7 @@ function SectionHeader({ title, section, rightElement, collapsed, onToggle }: Se
 }
 
 function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
+  const { t } = useI18n()
   const { filters, updateFilters, resetFilters, activeFilterCount } = useFilters()
   const [topicInput, setTopicInput] = useState('')
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
@@ -110,11 +112,11 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
       >
         <div className="p-4 space-y-1">
           <div className="flex items-center justify-between mb-4 lg:hidden">
-            <span className="text-lg font-semibold text-github-text">Filters</span>
+            <span className="text-lg font-semibold text-github-text">{t('filters.title')}</span>
             <button
               onClick={onClose}
               className="p-1 text-github-muted hover:text-github-text"
-              aria-label="Close filters"
+              aria-label={t('filters.close')}
             >
               <CloseIcon />
             </button>
@@ -129,7 +131,7 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
 
           <div className="border-b border-github-border pb-3">
             <SectionHeader
-              title="Time Range"
+              title={t('filters.timeRange')}
               section="time"
               collapsed={collapsedSections.time}
               onToggle={toggleSection}
@@ -147,7 +149,7 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                     }`}
                     aria-pressed={filters.timeRange === key}
                   >
-                    {label}
+                    {t(label)}
                   </button>
                 ))}
               </div>
@@ -156,7 +158,7 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
 
           <div className="border-b border-github-border pb-3">
             <SectionHeader
-              title={`Language${filters.language.length > 0 ? ` (${filters.language.length})` : ''}`}
+              title={`${t('filters.language')}${filters.language.length > 0 ? ` (${filters.language.length})` : ''}`}
               section="language"
               collapsed={collapsedSections.language}
               onToggle={toggleSection}
@@ -189,7 +191,7 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
 
           <div className="border-b border-github-border pb-3">
             <SectionHeader
-              title="License"
+              title={t('filters.license')}
               section="license"
               rightElement={<LicenseLegend />}
               collapsed={collapsedSections.license}
@@ -201,12 +203,12 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                   value={filters.licenseType}
                   onChange={(e) => updateFilters({ licenseType: e.target.value })}
                   className="w-full px-2 py-1.5 bg-github-dark border border-github-border rounded-lg text-sm text-github-text focus:outline-none focus:ring-2 focus:ring-github-accent cursor-pointer"
-                  aria-label="Filter by license type"
+                  aria-label={t('filters.licenseAria')}
                 >
-                  <option value="all">All Licenses</option>
-                  <option value="open_source">Open Source Only</option>
-                  <option value="no_license">No License</option>
-                  <optgroup label="Specific">
+                  <option value="all">{t('filters.allLicenses')}</option>
+                  <option value="open_source">{t('filters.openSourceOnly')}</option>
+                  <option value="no_license">{t('filters.noLicenseOption')}</option>
+                  <optgroup label={t('filters.specific')}>
                     {COMMON_LICENSES.map((license) => (
                       <option key={license} value={license}>
                         {license}
@@ -220,7 +222,7 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
 
           <div className="border-b border-github-border pb-3">
             <SectionHeader
-              title="Topics"
+              title={t('filters.topics')}
               section="topics"
               collapsed={collapsedSections.topics}
               onToggle={toggleSection}
@@ -238,7 +240,7 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                         <button
                           onClick={() => removeTopic(topic)}
                           className="ml-1 hover:text-white focus:outline-none"
-                          aria-label={`Remove topic ${topic}`}
+                          aria-label={t('filters.removeTopic', { topic })}
                         >
                           ×
                         </button>
@@ -251,9 +253,9 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                   value={topicInput}
                   onChange={(e) => setTopicInput(e.target.value)}
                   onKeyDown={handleTopicAdd}
-                  placeholder="Add topic (Enter)"
+                  placeholder={t('filters.addTopicPlaceholder')}
                   className="w-full px-2 py-1.5 bg-github-dark border border-github-border rounded-lg text-sm text-github-text placeholder-github-muted focus:outline-none focus:ring-2 focus:ring-github-accent"
-                  aria-label="Add topic filter"
+                  aria-label={t('filters.addTopicAria')}
                 />
               </div>
             )}
@@ -261,7 +263,7 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
 
           <div className="border-b border-github-border pb-3">
             <SectionHeader
-              title="Developer Filters"
+              title={t('filters.developerFilters')}
               section="developer"
               collapsed={collapsedSections.developer}
               onToggle={toggleSection}
@@ -282,11 +284,11 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                       }`}
                     >
                       <span>{icon}</span>
-                      <span>{label}</span>
+                      <span>{t(label)}</span>
                       {needsToken && (
                         <span
                           className="ml-auto text-[10px] px-1 py-0.5 rounded bg-github-border text-github-muted"
-                          title="More accurate with a GitHub personal access token"
+                          title={t('filters.patHint')}
                         >
                           PAT
                         </span>
@@ -300,7 +302,7 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
 
           <div className="border-b border-github-border pb-3">
             <SectionHeader
-              title="Options"
+              title={t('filters.options')}
               section="misc"
               collapsed={collapsedSections.misc}
               onToggle={toggleSection}
@@ -314,7 +316,7 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                     onChange={(e) => updateFilters({ includeArchived: e.target.checked })}
                     className="w-4 h-4 rounded border-github-border bg-github-dark text-github-accent focus:ring-github-accent focus:ring-offset-0"
                   />
-                  <span className="text-sm text-github-muted">Include archived</span>
+                  <span className="text-sm text-github-muted">{t('filters.includeArchived')}</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -323,10 +325,10 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                     onChange={(e) => updateFilters({ includeForks: e.target.checked })}
                     className="w-4 h-4 rounded border-github-border bg-github-dark text-github-accent focus:ring-github-accent focus:ring-offset-0"
                   />
-                  <span className="text-sm text-github-muted">Include forks</span>
+                  <span className="text-sm text-github-muted">{t('filters.includeForks')}</span>
                 </label>
                 <div>
-                  <span className="text-sm text-github-muted block mb-1">README:</span>
+                  <span className="text-sm text-github-muted block mb-1">{t('filters.readme')}</span>
                   <div className="flex gap-1">
                     <button
                       onClick={() => updateFilters({ readmeLanguage: 'all' })}
@@ -337,7 +339,7 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                       }`}
                       aria-pressed={filters.readmeLanguage === 'all'}
                     >
-                      All
+                      {t('filters.readmeAll')}
                     </button>
                     <button
                       onClick={() => updateFilters({ readmeLanguage: 'english' })}
@@ -348,12 +350,12 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
                       }`}
                       aria-pressed={filters.readmeLanguage === 'english'}
                     >
-                      English
+                      {t('filters.readmeEnglish')}
                     </button>
                   </div>
                   {filters.readmeLanguage === 'english' && (
                     <p className="text-xs text-github-muted/70 mt-1">
-                      English detection requires a GitHub personal access token.
+                      {t('filters.readmeTokenHint')}
                     </p>
                   )}
                 </div>
@@ -366,7 +368,7 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
               onClick={resetFilters}
               className="w-full mt-2 px-3 py-2 text-sm font-medium text-github-accent hover:bg-github-accent/10 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-github-accent"
             >
-              Reset all ({activeFilterCount})
+              {t('filters.resetAll', { count: activeFilterCount })}
             </button>
           )}
         </div>

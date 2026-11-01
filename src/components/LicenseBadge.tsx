@@ -1,14 +1,17 @@
 import { isOSILicense } from '../lib/utils'
+import { useI18n } from '../hooks/useI18n'
 
 interface LicenseBadgeProps {
   spdxId: string | null
 }
 
 function LicenseBadge({ spdxId }: LicenseBadgeProps) {
+  const { t } = useI18n()
+
   if (!spdxId || spdxId === 'NOASSERTION') {
     return (
       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-github-border text-github-muted">
-        No License
+        {t('license.noLicense')}
       </span>
     )
   }
@@ -23,7 +26,7 @@ function LicenseBadge({ spdxId }: LicenseBadgeProps) {
           : 'bg-github-border text-github-muted'
       }`}
     >
-      {isOSI ? 'Open Source' : spdxId}
+      {isOSI ? t('license.openSource') : spdxId}
     </span>
   )
 }
