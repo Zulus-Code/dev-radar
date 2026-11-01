@@ -12,7 +12,7 @@
 
 | Параметр | Значение |
 |---|---|
-| База | форк [`Zulus-Code/github-dashboard`](https://github.com/Zulus-Code/github-dashboard) ← `plamen5rov/github-dashboard` |
+| База | форк [`Zulus-Code/dev-radar`](https://github.com/Zulus-Code/dev-radar) ← `plamen5rov/github-dashboard` |
 | Лицензия | MIT |
 | Стек | React 19, TypeScript, Vite 7, Tailwind 3, TanStack Query 5, React Router 7 |
 | Объём | 6 126 строк TS/TSX в 30 файлах |
