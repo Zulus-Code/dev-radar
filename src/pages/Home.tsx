@@ -108,7 +108,7 @@ function Home() {
             </button>
             <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <GitHubIcon className="w-8 h-8 text-github-text" />
-              <h1 className="text-2xl font-bold text-github-text">GitHub Dashboard</h1>
+              <h1 className="text-2xl font-bold text-github-text">Dev Radar</h1>
             </Link>
           </div>
           <div className="flex items-center gap-3 sm:gap-4">

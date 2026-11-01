@@ -1,6 +1,7 @@
 # DONE.md — Changelog
 
 ## Desktop (Tauri)
+- [2026-11-01] Renamed the desktop binary and product identity: Cargo package `app` → `dev-radar` (so the deb installs `/usr/bin/dev-radar` with `Exec=dev-radar` and `Icon=dev-radar` instead of the collision-prone `app`), filled `license`/`repository`, dropped ~45 Android/iOS/Windows icon variants, renamed the in-app title and page `<title>` to "Dev Radar", package name `github-dashboard` → `dev-radar` (files: src-tauri/Cargo.toml, src-tauri/src/main.rs, src-tauri/icons/, src/pages/Home.tsx, index.html, package.json)
 - [2026-11-01] Phase 1 native Linux shell — Tauri 2 wraps the existing SPA (`src-tauri/`, identifier `top.zulus.devradar`, 1280×800 window / min 1060×680, `HashRouter` instead of `BrowserRouter`, deb + AppImage targets); external links go through `openExternal()` (opener plugin inside Tauri, `window.open` in the browser); built `dev-radar_0.1.0_amd64.deb` (4.99 MiB) and `Dev Radar_0.1.0_amd64.AppImage` (82.16 MiB) (files: src-tauri/, src/App.tsx, src/lib/openExternal.ts, src/components/RepoCard.tsx, src/components/BookmarksPanel.tsx, src/components/CollectionsPanel.tsx, src/pages/Settings.tsx, package.json)
 - [2026-11-01] README synced with the desktop shell — Tauri prerequisites, `tauri:dev`/`tauri:build` scripts, `openExternal` in the lib map; corrected stale Node >= 20 → >= 22 and test count 167 → 165 (files: README.md)
 

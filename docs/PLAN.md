@@ -49,6 +49,8 @@ Tauri 2 (Rust 1.99) ── окно GTK/WebKitGTK
 
 ### Фаза 0. Фундамент: CI и честные сортировки
 
+**Статус: выполнено.** CI зелёный на `chore/phase-0-ci` (run `41284968547`, 52 с), 165 тестов.
+
 Задачи:
 - `.github/workflows/ci.yml`: `npm ci` → `lint` → `typecheck` → `test` → `build` на Node 22.
 - Локально на Node 26 тесты падают: Node притащил экспериментальный `localStorage`, он
@@ -60,6 +62,8 @@ Tauri 2 (Rust 1.99) ── окно GTK/WebKitGTK
 Готово, когда: CI зелёный на push, 167 тестов проходят, ни одна опция сортировки не врёт.
 
 ### Фаза 1. Нативная обёртка Tauri
+
+**Статус: выполнено.** Окно запущено на реальном X11, данные GitHub загрузились; `.deb` 5 МБ, AppImage 82 МБ.
 
 Задачи:
 - `src-tauri/`: Cargo-проект, `tauri.conf.json` (`devUrl: http://localhost:5173`,
