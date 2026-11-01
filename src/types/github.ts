@@ -110,4 +110,6 @@ export interface UserPreferences {
   ignoredLanguages: string[]
   bookmarks: Bookmark[]
   collections: Collection[]
+  /** Star-history collection; off stops syncing but keeps existing snapshots. */
+  statsEnabled: boolean
 }

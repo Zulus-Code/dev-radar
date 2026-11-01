@@ -9,6 +9,7 @@ function freshDefaults(): UserPreferences {
     ignoredLanguages: [],
     bookmarks: [],
     collections: [],
+    statsEnabled: true,
   }
 }
 
@@ -23,6 +24,7 @@ export function loadPreferences(): UserPreferences {
       ignoredLanguages: parsed.ignoredLanguages ?? [],
       bookmarks: parsed.bookmarks ?? [],
       collections: parsed.collections ?? [],
+      statsEnabled: parsed.statsEnabled !== false,
     }
   } catch {
     return freshDefaults()

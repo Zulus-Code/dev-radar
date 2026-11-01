@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { fetchReposWithIntelligence } from '../lib/github'
+import { recordSeenRepos } from '../lib/trendsStore'
 import type { Repository, RateLimitInfo } from '../types/github'
 import type { BuildQueryOptions, SortField, SortOrder } from '../lib/utils'
 
@@ -66,6 +67,12 @@ export function useRepos({ sort, order, authRevision, ...queryOptions }: UseRepo
 
   const pages = result.data?.pages
   const rateLimit = pages && pages.length > 0 ? pages[pages.length - 1].rateLimit : undefined
+
+  // Fire-and-forget: what the user sees feeds the tracking set (Tauri only).
+  useEffect(() => {
+    if (allRepos.length === 0) return
+    void recordSeenRepos(allRepos)
+  }, [allRepos])
 
   return {
     ...result,

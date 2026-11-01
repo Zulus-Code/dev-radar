@@ -1,6 +1,7 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import { useI18n } from './hooks/useI18n'
+import { runStartupSync } from './lib/trendsSync'
 
 const Home = lazy(() => import('./pages/Home'))
 const Settings = lazy(() => import('./pages/Settings'))
@@ -19,6 +20,10 @@ function LoadingFallback() {
 }
 
 function App() {
+  useEffect(() => {
+    void runStartupSync()
+  }, [])
+
   return (
     <HashRouter>
       <Suspense fallback={<LoadingFallback />}>
