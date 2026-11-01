@@ -41,7 +41,7 @@ const RepoCard = memo(function RepoCard({ repo, onTopicClick, activeDeveloperFil
   )
 
   return (
-    <article className="flex flex-col p-5 bg-github-darker border border-github-border rounded-xl hover:border-github-accent/50 transition-colors">
+    <article className="repo-card flex flex-col p-5 bg-github-darker border border-github-border rounded-xl hover:border-github-accent/50 transition-colors">
       <div className="flex items-start gap-3 mb-3">
         <img
           src={repo.owner.avatarUrl}

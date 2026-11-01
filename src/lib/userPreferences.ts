@@ -1,4 +1,6 @@
-import type { UserPreferences, Collection } from '../types/github'
+import type { UserPreferences, Collection, AccentColor, Density } from '../types/github'
+import type { FilterPreset } from './presets'
+import { MAX_PRESETS, normalizePresetName, sanitizePreset } from './presets'
 
 const STORAGE_KEY = 'github_dashboard_preferences'
 
@@ -10,7 +12,25 @@ function freshDefaults(): UserPreferences {
     bookmarks: [],
     collections: [],
     statsEnabled: true,
+    accent: 'blue',
+    density: 'comfortable',
   }
+}
+
+const ACCENT_VALUES: Record<AccentColor, true> = {
+  blue: true,
+  violet: true,
+  emerald: true,
+  amber: true,
+}
+const DENSITY_VALUES: Record<Density, true> = { comfortable: true, compact: true }
+
+function isAccent(value: unknown): value is AccentColor {
+  return typeof value === 'string' && Object.hasOwn(ACCENT_VALUES, value)
+}
+
+function isDensity(value: unknown): value is Density {
+  return typeof value === 'string' && Object.hasOwn(DENSITY_VALUES, value)
 }
 
 export function loadPreferences(): UserPreferences {
@@ -25,6 +45,8 @@ export function loadPreferences(): UserPreferences {
       bookmarks: parsed.bookmarks ?? [],
       collections: parsed.collections ?? [],
       statsEnabled: parsed.statsEnabled !== false,
+      accent: isAccent(parsed.accent) ? parsed.accent : 'blue',
+      density: isDensity(parsed.density) ? parsed.density : 'comfortable',
     }
   } catch {
     return freshDefaults()
@@ -175,4 +197,75 @@ export function ignoreLanguage(language: string): void {
 
 export function unignoreLanguage(language: string): void {
   savePreferences({ ignoredLanguages: cachedPrefs.ignoredLanguages.filter((l) => l !== language) })
+}
+
+// Filter presets live under their own key so they survive preference resets.
+const PRESETS_KEY = 'dev_radar_presets'
+
+export function loadPresets(): FilterPreset[] {
+  try {
+    const stored = localStorage.getItem(PRESETS_KEY)
+    if (!stored) return []
+    const parsed: unknown = JSON.parse(stored)
+    if (!Array.isArray(parsed)) return []
+    return parsed
+      .map(sanitizePreset)
+      .filter((preset): preset is FilterPreset => preset !== null)
+      .slice(0, MAX_PRESETS)
+  } catch {
+    return []
+  }
+}
+
+let cachedPresets: FilterPreset[] = typeof localStorage !== 'undefined' ? loadPresets() : []
+const presetListeners = new Set<() => void>()
+
+function persistPresets(presets: FilterPreset[]): void {
+  cachedPresets = presets
+  try {
+    localStorage.setItem(PRESETS_KEY, JSON.stringify(presets))
+  } catch {
+    // Quota or disabled storage: keep the in-memory list usable.
+  }
+  presetListeners.forEach((listener) => listener())
+}
+
+export function reloadPresets(): void {
+  cachedPresets = loadPresets()
+  presetListeners.forEach((listener) => listener())
+}
+
+export function getPresetsSnapshot(): FilterPreset[] {
+  return cachedPresets
+}
+
+export function subscribePresets(listener: () => void): () => void {
+  presetListeners.add(listener)
+  return () => {
+    presetListeners.delete(listener)
+  }
+}
+
+/** Returns null at the name or capacity limit; both are user-facing errors. */
+export function addUserPreset(name: string, params: string): FilterPreset | null {
+  const trimmed = normalizePresetName(name)
+  if (!trimmed || cachedPresets.length >= MAX_PRESETS) return null
+  const preset: FilterPreset = {
+    id: crypto.randomUUID(),
+    name: trimmed,
+    params,
+    builtIn: false,
+  }
+  persistPresets([...cachedPresets, preset])
+  return preset
+}
+
+export function deleteUserPreset(id: string): void {
+  persistPresets(cachedPresets.filter((preset) => preset.id !== id))
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (event) => {
+    if (event.key === PRESETS_KEY) reloadPresets()
+  })
 }

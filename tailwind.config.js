@@ -14,7 +14,7 @@ export default {
           border: '#30363d',
           text: '#c9d1d9',
           muted: '#8b949e',
-          accent: '#58a6ff',
+          accent: 'rgb(var(--github-accent-rgb) / <alpha-value>)',
           green: '#238636',
           purple: '#a371f7',
           link: '#0969da',

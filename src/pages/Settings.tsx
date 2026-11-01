@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTheme } from '../hooks/useTheme'
+import { useAppearance } from '../hooks/useAppearance'
+import { ACCENTS, ACCENT_ORDER } from '../lib/appearance'
 import { useI18n } from '../hooks/useI18n'
 import { usePersonalization } from '../hooks/usePersonalization'
 import { useTrendsRevision } from '../hooks/useTrendDeltas'
@@ -20,6 +22,7 @@ function Settings() {
   const [isValidating, setIsValidating] = useState(false)
   const [hasExistingToken, setHasExistingToken] = useState(() => getToken() !== null)
   const { theme, toggleTheme } = useTheme()
+  const { accent, density, setAccent, setDensity } = useAppearance()
   const { t, tPlural, lang, setLang } = useI18n()
   const { prefs } = usePersonalization()
   const trendsRevision = useTrendsRevision()
@@ -122,6 +125,62 @@ function Settings() {
                 {label}
               </button>
             ))}
+          </div>
+        </section>
+
+        <section className="p-6 bg-github-darker border border-github-border rounded-xl space-y-4">
+          <h2 className="text-lg font-semibold text-github-text">{t('appearance.heading')}</h2>
+          <p className="text-sm text-github-muted">{t('appearance.help')}</p>
+          <div className="space-y-2">
+            <span className="text-sm text-github-text block">{t('appearance.accent')}</span>
+            <div
+              className="flex flex-wrap gap-2"
+              role="group"
+              aria-label={t('appearance.accent')}
+            >
+              {ACCENT_ORDER.map((color) => (
+                <button
+                  key={color}
+                  onClick={() => setAccent(color)}
+                  aria-pressed={accent === color}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-github-accent ${
+                    accent === color
+                      ? 'bg-github-accent/20 text-github-text'
+                      : 'bg-github-border text-github-muted hover:text-github-text'
+                  }`}
+                >
+                  <span
+                    className="inline-block w-3 h-3 rounded-full"
+                    style={{ backgroundColor: ACCENTS[color].hex }}
+                    aria-hidden="true"
+                  />
+                  {t(ACCENTS[color].label)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <span className="text-sm text-github-text block">{t('appearance.density')}</span>
+            <div
+              className="flex gap-2"
+              role="group"
+              aria-label={t('appearance.density')}
+            >
+              {(['comfortable', 'compact'] as const).map((option) => (
+                <button
+                  key={option}
+                  onClick={() => setDensity(option)}
+                  aria-pressed={density === option}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-github-accent ${
+                    density === option
+                      ? 'bg-github-accent text-white'
+                      : 'bg-github-border text-github-muted hover:text-github-text'
+                  }`}
+                >
+                  {t(option === 'compact' ? 'appearance.compact' : 'appearance.comfortable')}
+                </button>
+              ))}
+            </div>
           </div>
         </section>
 

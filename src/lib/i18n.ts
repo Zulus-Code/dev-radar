@@ -104,6 +104,31 @@ const en = {
   'filters.readmeTokenHint': 'English detection requires a GitHub personal access token.',
   'filters.resetAll': 'Reset all ({count})',
 
+  // Filter presets
+  'preset.section': 'Presets',
+  'preset.youngProject': 'Young project',
+  'preset.goodFirstIssue': 'Good first issue',
+  'preset.noStarLeader': 'No star leader',
+  'preset.save': 'Save preset',
+  'preset.namePlaceholder': 'Preset name',
+  'preset.nameAria': 'Preset name',
+  'preset.saveAction': 'Save',
+  'preset.delete': 'Delete preset {name}',
+  'preset.emptyName': 'Enter a preset name',
+  'preset.limitReached': 'Preset limit of 20 reached',
+
+  // Appearance
+  'appearance.heading': 'Appearance',
+  'appearance.help': 'Saved on this machine and applied immediately.',
+  'appearance.accent': 'Accent colour',
+  'appearance.accent.blue': 'Blue',
+  'appearance.accent.violet': 'Violet',
+  'appearance.accent.emerald': 'Emerald',
+  'appearance.accent.amber': 'Amber',
+  'appearance.density': 'Density',
+  'appearance.comfortable': 'Comfortable',
+  'appearance.compact': 'Compact',
+
   // Search / min stars
   'search.placeholder': 'Search repositories...',
   'search.aria': 'Search repositories',
@@ -332,7 +357,7 @@ const ru: Record<TranslationKey, string> = {
   'sort.bestMatch': 'Лучшее совпадение',
   'sort.mostStarred': 'По звёздам',
   'sort.mostForked': 'По форкам',
-  'sort.recentlyUpdated': 'По обновлению',
+  'sort.recentlyUpdated': 'Недавно обновлённые',
   'sort.growing': 'Растущие',
 
   'trend.window.week': 'за неделю',
@@ -374,6 +399,29 @@ const ru: Record<TranslationKey, string> = {
   'filters.readmeTokenHint':
     'Определение английского языка требует Personal Access Token GitHub.',
   'filters.resetAll': 'Сбросить всё ({count})',
+
+  'preset.section': 'Пресеты',
+  'preset.youngProject': 'Молодой проект',
+  'preset.goodFirstIssue': 'Good first issue',
+  'preset.noStarLeader': 'Без звёздного лидера',
+  'preset.save': 'Сохранить пресет',
+  'preset.namePlaceholder': 'Название пресета',
+  'preset.nameAria': 'Название пресета',
+  'preset.saveAction': 'Сохранить',
+  'preset.delete': 'Удалить пресет {name}',
+  'preset.emptyName': 'Введите название пресета',
+  'preset.limitReached': 'Достигнут лимит в 20 пресетов',
+
+  'appearance.heading': 'Внешний вид',
+  'appearance.help': 'Сохраняется на этом устройстве и применяется сразу.',
+  'appearance.accent': 'Акцентный цвет',
+  'appearance.accent.blue': 'Синий',
+  'appearance.accent.violet': 'Фиолетовый',
+  'appearance.accent.emerald': 'Изумрудный',
+  'appearance.accent.amber': 'Янтарный',
+  'appearance.density': 'Плотность',
+  'appearance.comfortable': 'Комфортная',
+  'appearance.compact': 'Компактная',
 
   'search.placeholder': 'Поиск репозиториев...',
   'search.aria': 'Поиск репозиториев',

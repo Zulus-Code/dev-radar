@@ -1,5 +1,16 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useFilters } from '../hooks/useFilters'
+import { useSort } from '../hooks/useSort'
+import { usePresets } from '../hooks/usePresets'
+import {
+  BUILT_IN_PRESETS,
+  MAX_PRESET_NAME_LENGTH,
+  MAX_PRESETS,
+  buildPresetParams,
+  normalizePresetName,
+} from '../lib/presets'
+import type { FilterPreset } from '../lib/presets'
 import { TIME_RANGES, COMMON_LICENSES, DEVELOPER_FILTERS } from '../lib/constants'
 import type { TimeRange } from '../lib/constants'
 import type { DeveloperFilter } from '../hooks/useFilters'
@@ -49,8 +60,15 @@ function SectionHeader({ title, section, rightElement, collapsed, onToggle }: Se
 function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
   const { t } = useI18n()
   const { filters, updateFilters, resetFilters, activeFilterCount } = useFilters()
+  const { sort } = useSort()
+  const { presets, addUserPreset, deleteUserPreset } = usePresets()
+  const [, setSearchParams] = useSearchParams()
   const [topicInput, setTopicInput] = useState('')
+  const [presetEditing, setPresetEditing] = useState(false)
+  const [presetDraft, setPresetDraft] = useState('')
+  const [presetError, setPresetError] = useState<string | null>(null)
   const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
+    presets: false,
     time: false,
     language: false,
     license: false,
@@ -95,6 +113,33 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
     setCollapsedSections((prev) => ({ ...prev, [section]: !prev[section] }))
   }
 
+  const applyPreset = (preset: FilterPreset) => {
+    // Replacing the URL restores both filters and sort; useFilters/useSort parse it.
+    setSearchParams(new URLSearchParams(preset.params))
+  }
+
+  const handlePresetSave = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!normalizePresetName(presetDraft)) {
+      setPresetError(t('preset.emptyName'))
+      return
+    }
+    if (presets.length >= MAX_PRESETS) {
+      setPresetError(t('preset.limitReached'))
+      return
+    }
+    addUserPreset(presetDraft, buildPresetParams(filters, sort))
+    setPresetDraft('')
+    setPresetError(null)
+    setPresetEditing(false)
+  }
+
+  const cancelPresetSave = () => {
+    setPresetDraft('')
+    setPresetError(null)
+    setPresetEditing(false)
+  }
+
   return (
     <>
       {isOpen && (
@@ -127,6 +172,88 @@ function FilterSidebar({ isOpen, onClose }: FilterSidebarProps) {
               value={filters.keyword}
               onChange={(value) => updateFilters({ keyword: value })}
             />
+          </div>
+
+          <div className="border-b border-github-border pb-3">
+            <SectionHeader
+              title={t('preset.section')}
+              section="presets"
+              collapsed={collapsedSections.presets}
+              onToggle={toggleSection}
+            />
+            {!collapsedSections.presets && (
+              <div className="mt-2 space-y-1">
+                {BUILT_IN_PRESETS.map((preset) => (
+                  <button
+                    key={preset.id}
+                    onClick={() => applyPreset(preset)}
+                    className="w-full text-left px-2 py-1.5 rounded-lg text-sm text-github-muted hover:bg-github-border hover:text-github-text transition-colors focus:outline-none focus:ring-2 focus:ring-github-accent"
+                  >
+                    {preset.nameKey ? t(preset.nameKey) : preset.name}
+                  </button>
+                ))}
+                {presets.map((preset) => (
+                  <div key={preset.id} className="flex items-center gap-1">
+                    <button
+                      onClick={() => applyPreset(preset)}
+                      className="flex-1 min-w-0 text-left px-2 py-1.5 rounded-lg text-sm text-github-muted hover:bg-github-border hover:text-github-text transition-colors focus:outline-none focus:ring-2 focus:ring-github-accent truncate"
+                    >
+                      {preset.name}
+                    </button>
+                    <button
+                      onClick={() => deleteUserPreset(preset.id)}
+                      className="px-1.5 py-1 text-github-muted hover:text-red-400 rounded focus:outline-none focus:ring-2 focus:ring-github-accent"
+                      aria-label={t('preset.delete', { name: preset.name })}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                {presetEditing ? (
+                  <form onSubmit={handlePresetSave} className="flex items-center gap-1">
+                    <input
+                      type="text"
+                      value={presetDraft}
+                      onChange={(e) => {
+                        setPresetDraft(e.target.value)
+                        setPresetError(null)
+                      }}
+                      maxLength={MAX_PRESET_NAME_LENGTH}
+                      autoFocus
+                      placeholder={t('preset.namePlaceholder')}
+                      aria-label={t('preset.nameAria')}
+                      className="flex-1 min-w-0 px-2 py-1.5 bg-github-dark border border-github-border rounded-lg text-sm text-github-text placeholder-github-muted focus:outline-none focus:ring-2 focus:ring-github-accent"
+                    />
+                    <button
+                      type="submit"
+                      className="px-2 py-1.5 text-sm font-medium text-github-accent hover:bg-github-accent/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-github-accent"
+                    >
+                      {t('preset.saveAction')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={cancelPresetSave}
+                      className="px-1.5 py-1.5 text-github-muted hover:text-github-text rounded-lg focus:outline-none focus:ring-2 focus:ring-github-accent"
+                      aria-label={t('common.cancel')}
+                    >
+                      ×
+                    </button>
+                  </form>
+                ) : (
+                  <button
+                    onClick={() => setPresetEditing(true)}
+                    className="w-full mt-1 px-2 py-1.5 text-sm font-medium text-github-accent hover:bg-github-accent/10 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-github-accent"
+                  >
+                    + {t('preset.save')}
+                  </button>
+                )}
+                {presetError && (
+                  <p className="text-xs text-red-400" role="alert">
+                    {presetError}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="border-b border-github-border pb-3">

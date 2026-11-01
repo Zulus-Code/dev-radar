@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatNumber, formatRelativeTime, getDateForTimeRange, buildGitHubQuery, isOSILicense, getAPISortField } from '../lib/utils'
+import { formatNumber, formatRelativeTime, getDateForTimeRange, getDateDaysAgo, buildGitHubQuery, isOSILicense, getAPISortField } from '../lib/utils'
 import { detectReadmeLanguage } from '../lib/readmeLanguage'
 
 describe('formatNumber', () => {
@@ -278,5 +278,54 @@ Check the [docs](https://docs.example.com) for details.
 **Bold** and *italic* text.
 > This is a blockquote.`
     expect(detectReadmeLanguage(text)).toBe('english')
+  })
+})
+
+describe('buildGitHubQuery star bounds and new qualifiers', () => {
+  it('combines min and max stars into one range qualifier', () => {
+    const query = buildGitHubQuery({ timeRange: 'week', minStars: 10, maxStars: 500 })
+    expect(query).toContain('stars:10..500')
+    expect(query).not.toContain('stars:>=10')
+    expect(query).not.toContain('stars:>50')
+  })
+
+  it('uses a zero lower bound when only max stars is set', () => {
+    const query = buildGitHubQuery({ timeRange: 'week', maxStars: 2000 })
+    expect(query).toContain('stars:0..2000')
+  })
+
+  it('ignores max stars that is not greater than min stars', () => {
+    const equal = buildGitHubQuery({ timeRange: 'week', minStars: 500, maxStars: 500 })
+    expect(equal).toContain('stars:>=500')
+    expect(equal).not.toContain('..')
+
+    const below = buildGitHubQuery({ timeRange: 'week', minStars: 500, maxStars: 100 })
+    expect(below).toContain('stars:>=500')
+    expect(below).not.toContain('stars:0..100')
+  })
+
+  it('keeps the default star floor when max stars is invalid', () => {
+    const query = buildGitHubQuery({ timeRange: 'week', maxStars: 0 })
+    expect(query).toContain('stars:>50')
+    expect(query).not.toContain('..')
+  })
+
+  it('adds a creation-date qualifier for the requested age', () => {
+    const query = buildGitHubQuery({ timeRange: 'week', createdWithinDays: 90 })
+    expect(query).toContain(`created:>${getDateDaysAgo(90)}`)
+  })
+
+  it('omits the creation-date qualifier when age is zero', () => {
+    const query = buildGitHubQuery({ timeRange: 'week', createdWithinDays: 0 })
+    expect(query).not.toContain('created:')
+  })
+
+  it('adds the good-first-issues qualifier only when enabled', () => {
+    expect(buildGitHubQuery({ timeRange: 'week', goodFirstIssues: true })).toContain(
+      'good-first-issues:>0',
+    )
+    expect(buildGitHubQuery({ timeRange: 'week', goodFirstIssues: false })).not.toContain(
+      'good-first-issues',
+    )
   })
 })

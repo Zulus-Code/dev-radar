@@ -50,13 +50,30 @@ describe('useFilters URL parsing', () => {
     expect(negative.current.filters.minStars).toBe(0)
   })
 
+  it('reads max stars, creation age and good-first-issues', () => {
+    const { result } = renderHook(() => useFilters(), {
+      wrapper: createWrapper(['/?maxStars=500&createdDays=90&gfi=true']),
+    })
+    expect(result.current.filters.maxStars).toBe(500)
+    expect(result.current.filters.createdWithinDays).toBe(90)
+    expect(result.current.filters.goodFirstIssues).toBe(true)
+  })
+
+  it('normalizes invalid max stars and creation age to zero', () => {
+    const { result } = renderHook(() => useFilters(), {
+      wrapper: createWrapper(['/?maxStars=abc&createdDays=-5&gfi=yes']),
+    })
+    expect(result.current.filters.maxStars).toBe(0)
+    expect(result.current.filters.createdWithinDays).toBe(0)
+    expect(result.current.filters.goodFirstIssues).toBe(false)
+  })
+
   it('drops unknown developer filters', () => {
     const { result } = renderHook(() => useFilters(), {
       wrapper: createWrapper(['/?developerFilters=bogus&developerFilters=ai_related']),
     })
     expect(result.current.filters.developerFilters).toEqual(['ai_related'])
   })
-
   it('canonicalizes list params for stable cache keys', () => {
     const { result } = renderHook(() => useFilters(), {
       wrapper: createWrapper(['/?language=Go&language=Ada&topics=z&topics=a&topics=z']),

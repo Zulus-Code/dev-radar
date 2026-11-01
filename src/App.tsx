@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { HashRouter, Routes, Route } from 'react-router-dom'
 import { useI18n } from './hooks/useI18n'
+import { useAppearance } from './hooks/useAppearance'
 import { runStartupSync } from './lib/trendsSync'
 
 const Home = lazy(() => import('./pages/Home'))
@@ -20,6 +21,8 @@ function LoadingFallback() {
 }
 
 function App() {
+  useAppearance()
+
   useEffect(() => {
     void runStartupSync()
   }, [])

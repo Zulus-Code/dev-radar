@@ -20,6 +20,9 @@ export interface FilterState {
   language: string[]
   licenseType: 'all' | 'open_source' | 'no_license' | string
   minStars: number
+  maxStars: number
+  createdWithinDays: number
+  goodFirstIssues: boolean
   topics: string[]
   includeArchived: boolean
   includeForks: boolean
@@ -28,11 +31,14 @@ export interface FilterState {
   developerFilters: DeveloperFilter[]
 }
 
-const DEFAULT_FILTERS: FilterState = {
+export const DEFAULT_FILTERS: FilterState = {
   timeRange: 'week',
   language: [],
   licenseType: 'all',
   minStars: 0,
+  maxStars: 0,
+  createdWithinDays: 0,
+  goodFirstIssues: false,
   topics: [],
   includeArchived: false,
   includeForks: false,
@@ -56,11 +62,16 @@ function parseFilters(searchParams: URLSearchParams): FilterState {
   const licenseType = searchParams.get('licenseType')
   const readmeLanguage = searchParams.get('readmeLanguage')
   const rawMinStars = parseInt(searchParams.get('minStars') || '0', 10)
+  const rawMaxStars = parseInt(searchParams.get('maxStars') || '0', 10)
+  const rawCreatedDays = parseInt(searchParams.get('createdDays') || '0', 10)
   return {
     timeRange: timeRange && TIME_RANGE_VALUES.has(timeRange) ? (timeRange as TimeRange) : DEFAULT_FILTERS.timeRange,
     language: parseListParam(searchParams.getAll('language')),
     licenseType: licenseType && LICENSE_VALUES.has(licenseType) ? licenseType : DEFAULT_FILTERS.licenseType,
     minStars: Number.isFinite(rawMinStars) && rawMinStars > 0 ? rawMinStars : 0,
+    maxStars: Number.isFinite(rawMaxStars) && rawMaxStars > 0 ? rawMaxStars : 0,
+    createdWithinDays: Number.isFinite(rawCreatedDays) && rawCreatedDays > 0 ? rawCreatedDays : 0,
+    goodFirstIssues: searchParams.get('gfi') === 'true',
     topics: parseListParam(searchParams.getAll('topics')),
     includeArchived: searchParams.get('includeArchived') === 'true',
     includeForks: searchParams.get('includeForks') === 'true',
@@ -108,6 +119,9 @@ export function useFilters() {
     if (filters.language.length > 0) count++
     if (filters.licenseType !== 'all') count++
     if (filters.minStars > 0) count++
+    if (filters.maxStars > 0) count++
+    if (filters.createdWithinDays > 0) count++
+    if (filters.goodFirstIssues) count++
     if (filters.topics.length > 0) count++
     if (filters.includeArchived) count++
     if (filters.includeForks) count++

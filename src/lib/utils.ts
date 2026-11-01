@@ -50,11 +50,13 @@ export function formatRelativeTime(dateString: string, lang: Lang = 'en'): strin
   })
 }
 
-export function getDateForTimeRange(timeRange: TimeRange): string {
-  const now = new Date()
-  const days = TIME_RANGES[timeRange].days
+export function getDateDaysAgo(days: number, now: Date = new Date()): string {
   const date = new Date(now.getTime() - days * 24 * 60 * 60 * 1000)
   return date.toISOString().split('T')[0]
+}
+
+export function getDateForTimeRange(timeRange: TimeRange): string {
+  return getDateDaysAgo(TIME_RANGES[timeRange].days)
 }
 
 export interface BuildQueryOptions {
@@ -63,6 +65,9 @@ export interface BuildQueryOptions {
   language?: string[]
   licenseType?: string
   minStars?: number
+  maxStars?: number
+  createdWithinDays?: number
+  goodFirstIssues?: boolean
   topics?: string[]
   includeArchived?: boolean
   includeForks?: boolean
@@ -81,6 +86,10 @@ export function buildGitHubQuery(options: BuildQueryOptions): string {
 
   const pushedDate = getDateForTimeRange(options.timeRange)
   parts.push(`pushed:>${pushedDate}`)
+
+  if (options.createdWithinDays && options.createdWithinDays > 0) {
+    parts.push(`created:>${getDateDaysAgo(options.createdWithinDays)}`)
+  }
 
   if (options.language && options.language.length > 0) {
     options.language.forEach((lang) => {
@@ -110,12 +119,22 @@ export function buildGitHubQuery(options: BuildQueryOptions): string {
     parts.push('fork:false')
   }
 
+  const minStars = options.minStars && options.minStars > 0 ? options.minStars : 0
+  const maxStars = options.maxStars && options.maxStars > 0 ? options.maxStars : 0
+
   if (options.developerFilters?.includes('low_competition')) {
     parts.push('stars:100..14999')
-  } else if (options.minStars && options.minStars > 0) {
-    parts.push(`stars:>=${options.minStars}`)
+  } else if (maxStars > 0 && maxStars > minStars) {
+    // A single range qualifier; GitHub ignores repeated stars: filters.
+    parts.push(`stars:${minStars}..${maxStars}`)
+  } else if (minStars > 0) {
+    parts.push(`stars:>=${minStars}`)
   } else {
     parts.push('stars:>50')
+  }
+
+  if (options.goodFirstIssues) {
+    parts.push('good-first-issues:>0')
   }
 
   return parts.join(' ')

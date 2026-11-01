@@ -4,6 +4,16 @@
 
 :root {
   color-scheme: dark;
+  --github-accent-rgb: 88 166 255;
+}
+
+/* One root class shrinks card padding and grid gaps for compact density. */
+.density-compact .repo-card {
+  padding: 0.75rem;
+}
+
+.density-compact .repo-grid {
+  gap: 0.5rem;
 }
 
 html:not(.dark) {

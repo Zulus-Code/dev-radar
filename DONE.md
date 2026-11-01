@@ -7,6 +7,9 @@
 - [2026-11-01] Language switcher in Settings (Русский / English) applies instantly, persists to `localStorage` — `// shortcut:` marked for the Phase 3 SQLite settings table (files: src/pages/Settings.tsx)
 - [2026-11-01] Added 17 i18n tests: ru/en key parity, placeholder parity, no empty translations, Russian plural categories (1/2/5/11/21), interpolation, initial-language resolution, live switching + persistence + `<html lang>`; existing 165 tests unchanged and green (files: src/__tests__/i18n.test.ts, README.md)
 
+## Presets & appearance (Phase 4)
+- [2026-11-01] Added three built-in presets (young project, good-first-issue, no star leader) and user presets stored as canonical search-params; added accent colour and density preferences; extended the search builder with `maxStars`, `createdWithinDays` and `goodFirstIssues` qualifiers (files: src/lib/presets.ts, src/lib/appearance.ts, src/hooks/usePresets.ts, src/hooks/useAppearance.ts, src/hooks/useFilters.ts, src/lib/utils.ts, src/components/FilterSidebar.tsx, src/pages/Settings.tsx, src/lib/i18n.ts).
+
 ## Trends (Phase 3)
 - [2026-11-01] Corrected the settings copy for statistics collection: it said "once a day", the actual cadence is at most every 6 hours with one snapshot per day (files: src/lib/i18n.ts).
 - [2026-11-01] SQLite storage — `tauri-plugin-sql` v2 (sqlite) registered at runtime from `setup()` so the database resolves to `app_data_dir()/dev-radar.db` instead of the plugin's default `app_config_dir()`, with one migration creating `repos`, `snapshots` (+ `idx_snapshots_day`) and `meta` exactly as specified in `docs/TRENDS.md`; capability grants `sql:default` + `sql:allow-execute` (files: src-tauri/Cargo.toml, src-tauri/src/lib.rs, src-tauri/capabilities/default.json)

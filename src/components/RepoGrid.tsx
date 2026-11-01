@@ -59,7 +59,7 @@ const RepoGrid = memo(function RepoGrid({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="repo-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {Array.from({ length: 6 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
@@ -99,7 +99,7 @@ const RepoGrid = memo(function RepoGrid({
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="repo-grid grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {repos.map((repo) => (
           <RepoCard key={repo.id} repo={repo} onTopicClick={onTopicClick} activeDeveloperFilters={activeDeveloperFilters} delta={deltas?.get(repo.id) ?? null} />
         ))}
@@ -131,7 +131,7 @@ const RepoGrid = memo(function RepoGrid({
 
 function SkeletonCard() {
   return (
-    <div className="p-5 bg-github-darker border border-github-border rounded-xl animate-pulse">
+    <div className="repo-card p-5 bg-github-darker border border-github-border rounded-xl animate-pulse">
       <div className="flex items-start gap-3 mb-3">
         <div className="w-10 h-10 rounded-full bg-github-border flex-shrink-0" />
         <div className="flex-1 space-y-2">

@@ -104,6 +104,9 @@ export interface Collection {
   updatedAt: string
 }
 
+export type AccentColor = 'blue' | 'violet' | 'emerald' | 'amber'
+export type Density = 'comfortable' | 'compact'
+
 export interface UserPreferences {
   followedTopics: string[]
   ignoredTopics: string[]
@@ -112,4 +115,6 @@ export interface UserPreferences {
   collections: Collection[]
   /** Star-history collection; off stops syncing but keeps existing snapshots. */
   statsEnabled: boolean
+  accent: AccentColor
+  density: Density
 }
