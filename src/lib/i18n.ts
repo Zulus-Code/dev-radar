@@ -60,6 +60,18 @@ const en = {
   'sort.mostStarred': 'Most Starred',
   'sort.mostForked': 'Most Forked',
   'sort.recentlyUpdated': 'Recently Updated',
+  'sort.growing': 'Growing',
+
+  // Star trends (docs/TRENDS.md)
+  'trend.window.week': 'past week',
+  'trend.window.days.one': 'past {count} day',
+  'trend.window.days.few': 'past {count} days',
+  'trend.window.days.many': 'past {count} days',
+  'trend.window.days.other': 'past {count} days',
+  'trend.noHistory': '—',
+  'trend.unit.day': '/d',
+  'trend.unit.week': '/wk',
+  'trend.unit.days': '/{count}d',
 
   // Time ranges
   'timeRange.today': 'Today',
@@ -180,6 +192,7 @@ const en = {
   'repo.forksTitle': '{count} forks',
   'repo.openPRsTitle': '{count} open PRs',
   'repo.openIssuesTitle': '{count} open issues',
+  'repo.growthTitle': 'Star growth',
 
   // Repo grid
   'grid.noMatches.title': 'No matches on the loaded pages',
@@ -261,6 +274,17 @@ const en = {
   'settings.requestsPerHour': '{count} requests/hour',
   'settings.languageHeading': 'Language',
   'settings.languageHelp': 'Applies immediately and is remembered on this machine.',
+  'settings.trendsHeading': 'Star history',
+  'settings.statsEnabled': 'Collect statistics',
+  'settings.statsEnabledHelp':
+    'Takes a daily snapshot of the tracked repositories while the app runs. Turning this off stops syncing and keeps the existing history.',
+  'settings.trackedRepos.one': 'Tracking {count} repository',
+  'settings.trackedRepos.few': 'Tracking {count} repositories',
+  'settings.trackedRepos.many': 'Tracking {count} repositories',
+  'settings.trackedRepos.other': 'Tracking {count} repositories',
+  'settings.lastSync': 'Last update: {time}',
+  'settings.trendsTokenHint': 'Star trends require a Personal Access Token.',
+  'settings.trendsUnavailable': 'Star history is only available in the desktop app.',
 } as const
 
 export type TranslationKey = keyof typeof en
@@ -309,6 +333,17 @@ const ru: Record<TranslationKey, string> = {
   'sort.mostStarred': 'По звёздам',
   'sort.mostForked': 'По форкам',
   'sort.recentlyUpdated': 'По обновлению',
+  'sort.growing': 'Растущие',
+
+  'trend.window.week': 'за неделю',
+  'trend.window.days.one': 'за {count} день',
+  'trend.window.days.few': 'за {count} дн.',
+  'trend.window.days.many': 'за {count} дн.',
+  'trend.window.days.other': 'за {count} дн.',
+  'trend.noHistory': '—',
+  'trend.unit.day': '/сут',
+  'trend.unit.week': '/нед',
+  'trend.unit.days': '/{count} дн.',
 
   'timeRange.today': 'Сегодня',
   'timeRange.thisWeek': 'Неделя',
@@ -422,6 +457,7 @@ const ru: Record<TranslationKey, string> = {
   'repo.forksTitle': 'Форки: {count}',
   'repo.openPRsTitle': 'Открытые PR: {count}',
   'repo.openIssuesTitle': 'Открытые issues: {count}',
+  'repo.growthTitle': 'Прирост звёзд',
 
   'grid.noMatches.title': 'На загруженных страницах ничего не подошло',
   'grid.noMatches.description':
@@ -499,6 +535,17 @@ const ru: Record<TranslationKey, string> = {
   'settings.requestsPerHour': '{count} запросов/час',
   'settings.languageHeading': 'Язык интерфейса',
   'settings.languageHelp': 'Применяется сразу и запоминается на этом компьютере.',
+  'settings.trendsHeading': 'История звёзд',
+  'settings.statsEnabled': 'Сбор статистики',
+  'settings.statsEnabledHelp':
+    'Пока приложение запущено, раз в сутки снимает число звёзд отслеживаемых репозиториев. Если выключить, синхронизация остановится, а история сохранится.',
+  'settings.trackedRepos.one': 'Отслеживается {count} репозиторий',
+  'settings.trackedRepos.few': 'Отслеживается {count} репозитория',
+  'settings.trackedRepos.many': 'Отслеживается {count} репозиториев',
+  'settings.trackedRepos.other': 'Отслеживается {count} репозитория',
+  'settings.lastSync': 'Последнее обновление: {time}',
+  'settings.trendsTokenHint': 'Для трендов нужен Personal Access Token.',
+  'settings.trendsUnavailable': 'История звёзд доступна только в настольном приложении.',
 }
 
 export const DICTIONARIES: Record<Lang, Record<TranslationKey, string>> = { en, ru }
