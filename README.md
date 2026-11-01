@@ -108,6 +108,7 @@ All data stored in `localStorage` — no backend required.
 | **Dates**         | date-fns 4                                              |
 | **Testing**       | Vitest 4 + React Testing Library + MSW 2                |
 | **Linting**       | ESLint 10 with typescript-eslint                        |
+| **Desktop Shell** | Tauri 2 (Linux: deb + AppImage)                         |
 
 ---
 
@@ -148,6 +149,7 @@ src/
 │   ├── languageColors.ts          # Language dot color map
 │   ├── licenseLegend.ts           # Open source license guide
 │   ├── readmeLanguage.ts          # English README detection
+│   ├── openExternal.ts            # Open links in system browser (Tauri aware)
 │   └── userPreferences.ts         # Preference store + CRUD
 ├── pages/
 │   ├── Home.tsx                   # Main trending feed
@@ -165,7 +167,7 @@ src/
 
 ### Prerequisites
 
-- **Node.js** >= 20
+- **Node.js** >= 22
 - **npm** >= 9
 
 ### Install
@@ -191,6 +193,20 @@ npm run build
 ```
 
 Output goes to `dist/`.
+
+### Desktop app (Tauri 2)
+
+The same SPA runs as a native Linux window via Tauri. Requires Rust 1.90+ and the
+usual Tauri Linux dependencies (`libwebkit2gtk-4.1-dev`, `libgtk-3-dev`,
+`libayatana-appindicator3-dev`, `librsvg2-dev`, `patchelf`).
+
+```bash
+npm run tauri:dev    # dev window against the Vite dev server
+npm run tauri:build  # release binary + deb/AppImage under src-tauri/target/release/bundle/
+```
+
+External links open in the system browser through `@tauri-apps/plugin-opener`;
+in a plain browser they fall back to `window.open`.
 
 ### Preview production build
 
@@ -230,7 +246,7 @@ The token is stored in **`localStorage`** and sent **only** to GitHub API endpoi
 
 ## Testing
 
-167 tests covering store logic, URL validation, query building, pagination,
+165 tests covering store logic, URL validation, query building, pagination,
 component rendering, filter logic, and language detection.
 
 ```bash
@@ -272,6 +288,8 @@ npm run lint
 | `npm run test:watch`       | Tests in watch mode        |
 | `npm run typecheck`        | TypeScript type check      |
 | `npm run lint`             | ESLint                     |
+| `npm run tauri:dev`        | Run the Tauri desktop app  |
+| `npm run tauri:build`      | Build deb + AppImage       |
 
 ---
 

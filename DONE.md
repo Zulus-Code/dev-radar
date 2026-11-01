@@ -1,5 +1,9 @@
 # DONE.md — Changelog
 
+## Desktop (Tauri)
+- [2026-11-01] Phase 1 native Linux shell — Tauri 2 wraps the existing SPA (`src-tauri/`, identifier `top.zulus.devradar`, 1280×800 window / min 1060×680, `HashRouter` instead of `BrowserRouter`, deb + AppImage targets); external links go through `openExternal()` (opener plugin inside Tauri, `window.open` in the browser); built `dev-radar_0.1.0_amd64.deb` (4.99 MiB) and `Dev Radar_0.1.0_amd64.AppImage` (82.16 MiB) (files: src-tauri/, src/App.tsx, src/lib/openExternal.ts, src/components/RepoCard.tsx, src/components/BookmarksPanel.tsx, src/components/CollectionsPanel.tsx, src/pages/Settings.tsx, package.json)
+- [2026-11-01] README synced with the desktop shell — Tauri prerequisites, `tauri:dev`/`tauri:build` scripts, `openExternal` in the lib map; corrected stale Node >= 20 → >= 22 and test count 167 → 165 (files: README.md)
+
 ## CI & Tooling
 - [2026-10-31] Stabilised vitest on Node 26 — `npm test` now runs with `NODE_OPTIONS=--no-experimental-webstorage` because Node's experimental `localStorage` global shadowed jsdom's (56/167 tests failed); added `.nvmrc` (`22`) and `engines: { node: ">=22" }` (files: package.json, .nvmrc)
 - [2026-10-31] Added GitHub Actions pipeline (`.github/workflows/ci.yml`) — push/pull_request on Node 22, workflow-level `NODE_OPTIONS=--no-experimental-webstorage`, runs `npm ci`, lint, typecheck, test, build
