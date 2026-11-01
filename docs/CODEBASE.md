@@ -1,7 +1,8 @@
 # Карта кода dev-radar
 
-Снимок на 2026-11-01 (коммит `2a0ac2b`, ветка `feat/i18n-ru`). 7 163 строки TS/TSX,
-183 теста в 14 файлах, плюс 13 строк Rust-оболочки Tauri.
+Снимок на 2026-11-01 (ветка `feat/trends-sqlite`). 8 388 строк TS/TSX,
+220 тестов в 15 файлах, плюс Rust-оболочка Tauri (~80 строк с миграциями).
+Механика трендов описана в [`TRENDS.md`](./TRENDS.md).
 
 ## Структура
 
@@ -30,6 +31,7 @@ src/
 │   ├── usePersonalization.ts# подписки на стор предпочтений
 │   ├── useAuth.ts           # ревизия токена для инвалидации кэша
 │   ├── useTheme.ts          # dark/light, localStorage 'theme'
+│   ├── useTrendDeltas.ts    # дельты звёзд для текущей выдачи (SQLite, Tauri-only)
 │   └── useClickOutside.ts
 ├── lib/
 │   ├── github.ts            # REST search + GraphQL enrichment (362 строки)
@@ -41,9 +43,12 @@ src/
 │   ├── readmeLanguage.ts    # эвристика «README на английском»
 │   ├── openExternal.ts      # внешние ссылки: opener в Tauri, window.open в браузере
 │   ├── i18n.ts              # словари ru/en, t(), плюрализация Intl.PluralRules
+│   ├── trends.ts            # окно дельты, формат бейджа, выбор окна для подписи
+│   ├── trendsStore.ts       # SQLite: снапшоты, трекинг-набор, дельты (no-op вне Tauri)
+│   ├── trendsSync.ts        # синк GraphQL пачками по 50, ретеншен 180 дней
 │   ├── licenseLegend.ts, languageColors.ts
 │   └── types/…              # типы REST-ответов и нормализованной модели
-├── __tests__/               # 14 файлов, 183 теста (Vitest + RTL + MSW)
+├── __tests__/               # 15 файлов, 220 тестов (Vitest + RTL + MSW)
 ```
 
 Оболочка:
@@ -88,6 +93,20 @@ UI (FilterSidebar / сортировка)
 | `dev_radar_language` | `ru`/`en` | `lib/i18n.ts` |
 
 Синхронизация между вкладками — через `storage`-событие. Серверной части нет.
+
+## Хранилище (SQLite, только Tauri)
+
+Файл: `~/.local/share/top.zulus.devradar/dev-radar.db` (`app_data_dir()`).
+
+| Таблица | Что лежит |
+|---|---|
+| `repos` | id, full_name, language, stars/forks/issues, `source` (`seen`/`top`), first/last_seen, missing_since |
+| `snapshots` | `(repo_id, day)` → stars/forks/issues; один снимок в сутки, UTC |
+| `meta` | `last_sync_at`, `schema_version` |
+
+Синк: при запуске, не чаще раза в 6 часов, GraphQL пачками по 50, ретеншен 180 дней.
+Вне Tauri (`isTauri() === false`) весь слой — no-op, поэтому веб-сборка и jsdom работают.
+Детали — в [`TRENDS.md`](./TRENDS.md).
 
 ## Сеть и лимиты
 
@@ -137,7 +156,7 @@ UI (FilterSidebar / сортировка)
 ```bash
 npm ci
 npm run dev        # http://localhost:5173
-npm test           # 183 теста (флаг --no-experimental-webstorage уже в скрипте)
+npm test           # 220 тестов (флаг --no-experimental-webstorage уже в скрипте)
 npm run lint
 npm run typecheck
 npm run build      # dist/

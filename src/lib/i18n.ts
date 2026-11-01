@@ -277,7 +277,7 @@ const en = {
   'settings.trendsHeading': 'Star history',
   'settings.statsEnabled': 'Collect statistics',
   'settings.statsEnabledHelp':
-    'Takes a daily snapshot of the tracked repositories while the app runs. Turning this off stops syncing and keeps the existing history.',
+    'Snapshots the tracked repositories while the app runs, at most once every 6 hours; one snapshot is kept per day. Turning this off stops syncing and keeps the existing history.',
   'settings.trackedRepos.one': 'Tracking {count} repository',
   'settings.trackedRepos.few': 'Tracking {count} repositories',
   'settings.trackedRepos.many': 'Tracking {count} repositories',
@@ -538,7 +538,7 @@ const ru: Record<TranslationKey, string> = {
   'settings.trendsHeading': 'История звёзд',
   'settings.statsEnabled': 'Сбор статистики',
   'settings.statsEnabledHelp':
-    'Пока приложение запущено, раз в сутки снимает число звёзд отслеживаемых репозиториев. Если выключить, синхронизация остановится, а история сохранится.',
+    'Пока приложение запущено, снимает число звёзд отслеживаемых репозиториев не чаще раза в 6 часов; за день хранится один снимок. Если выключить, синхронизация остановится, а история сохранится.',
   'settings.trackedRepos.one': 'Отслеживается {count} репозиторий',
   'settings.trackedRepos.few': 'Отслеживается {count} репозитория',
   'settings.trackedRepos.many': 'Отслеживается {count} репозиториев',

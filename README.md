@@ -33,6 +33,13 @@ Discover repositories updated in the last **24 hours**, **7 days**, or
   "Load more" fallback when many pages get filtered out client-side
 - 📱 Fully responsive: 1 column (mobile), 2 columns (tablet), 3 columns (desktop)
 
+### 📈 Real Star Growth
+
+Local SQLite snapshots of star counts, taken while the app runs — so the **Growing** sort ranks
+repositories by stars actually gained over the last week (or the whole available period on a fresh
+install), not by "recently pushed". Needs a PAT; history builds forward from the first run.
+Mechanics: [`docs/TRENDS.md`](./docs/TRENDS.md).
+
 ### ✨ Sorting
 
 | Sort                     | Description                         |
@@ -41,7 +48,7 @@ Discover repositories updated in the last **24 hours**, **7 days**, or
 | 🍴 **Most Forked**        | Descending by fork count            |
 | 🕐 **Recently Updated**   | Last push date descending           |
 | ✨ **Best Match**         | GitHub relevance ranking            |
-| 📈 **Growing**            | Star delta from local snapshots     |
+| 📈 **Growing**            | Stars gained over the available history (7 days when possible) |
 
 ### 📈 Star Growth
 
@@ -320,10 +327,9 @@ The token is stored in **`localStorage`** and sent **only** to GitHub API endpoi
 ## Testing
 
 220 tests covering store logic, URL validation, query building, pagination,
-component rendering, filter logic, language detection, i18n (dictionary
-parity, Russian plurals, locale resolution, live language switching), and the
-trend helpers (delta windows, badge formatting, GraphQL batching, tracking-set
-cap and eviction).
+component rendering, filter logic, language detection, i18n (dictionary parity,
+Russian plurals, locale resolution, live switching), and the trend helpers
+(delta windows, badge formatting, GraphQL batching, tracking-set cap and eviction).
 
 ```bash
 # Run all tests
