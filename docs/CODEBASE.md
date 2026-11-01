@@ -1,14 +1,14 @@
 # Карта кода dev-radar
 
-Снимок на момент форка (коммит `e04cf36`, ветка `master`). 6 126 строк TS/TSX, 30 файлов,
-167 тестов в 13 файлах.
+Снимок на 2026-11-01 (коммит `03a8872`, ветка `master`). 6 148 строк TS/TSX в 56 файлах,
+165 тестов в 13 файлах, плюс 13 строк Rust-оболочки Tauri.
 
 ## Структура
 
 ```
 src/
 ├── main.tsx                 # точка входа: QueryClient (staleTime 5 мин), ErrorBoundary, App
-├── App.tsx                  # BrowserRouter, 2 маршрута: / и /settings (lazy)
+├── App.tsx                  # HashRouter (нужен Tauri), 2 маршрута: / и /settings (lazy)
 ├── index.css                # Tailwind + CSS-переменные темы
 ├── pages/
 │   ├── Home.tsx             # главный экран: шапка, панели, сортировка, RepoGrid (292 строки)
@@ -39,9 +39,21 @@ src/
 │   ├── authStore.ts         # PAT в localStorage 'github_token', синк между вкладками
 │   ├── userPreferences.ts   # букмарки/коллекции/топики/ignore в localStorage
 │   ├── readmeLanguage.ts    # эвристика «README на английском»
+│   ├── openExternal.ts      # внешние ссылки: opener в Tauri, window.open в браузере
 │   ├── licenseLegend.ts, languageColors.ts
 │   └── types/…              # типы REST-ответов и нормализованной модели
-└── __tests__/               # 13 файлов, 167 тестов (Vitest + RTL + MSW)
+├── __tests__/               # 13 файлов, 165 тестов (Vitest + RTL + MSW)
+```
+
+Оболочка:
+
+```
+src-tauri/
+├── Cargo.toml               # пакет `dev-radar`, lib `dev_radar_lib`
+├── tauri.conf.json          # окно 1280x800, bundle deb+appimage, identifier top.zulus.devradar
+├── capabilities/default.json# выданные разрешения (opener:default)
+├── icons/                   # icon.png, 32/64/128/128@2x, icns, ico
+└── src/main.rs, lib.rs      # точка входа + Builder с tauri_plugin_opener
 ```
 
 ## Поток данных
@@ -87,8 +99,8 @@ UI (FilterSidebar / сортировка)
 
 | Задача | Где менять |
 |---|---|
-| HashRouter для Tauri | `src/App.tsx` — одна строка |
-| Внешние ссылки в системный браузер | `RepoCard.tsx`, `Settings.tsx`, `LicenseLegend.tsx` — все `href` на github.com |
+| ~~HashRouter для Tauri~~ | ~~`src/App.tsx`~~ — сделано в Фазе 1 |
+| ~~Внешние ссылки в системный браузер~~ | ~~`src/lib/openExternal.ts`~~ — сделано в Фазе 1 (4 места) |
 | i18n | новый `src/lib/i18n.ts` + 30 файлов с текстом (см. `PLAN.md`, Фаза 2) |
 | Настоящие тренды | `lib/github.ts` (источник), `hooks/useRepos.ts` (сортировка), `RepoCard.tsx` (бейдж), новый слой SQLite |
 | Свои пресеты фильтров | `lib/constants.ts` + `hooks/useFilters.ts` (URL-схема уже расширяемая) |
@@ -112,19 +124,20 @@ UI (FilterSidebar / сортировка)
    пользователь увидит ошибку загрузки на пустом месте.
 7. **Токен в localStorage открытым текстом.** Для SPA приемлемо, для нативного клиента —
    переносим в SQLite.
-8. **Тесты падают на Node 26**, но не из-за кода: Node притащил экспериментальный `localStorage`,
-   который перебивает jsdom. На Node 22 зелёные; локально лечится
-   `NODE_OPTIONS=--no-experimental-webstorage`.
+8. **Тесты и Node 26.** Node 26 притащил экспериментальный `localStorage`, который перебивает jsdom.
+   Оба скрипта (`npm test`, `npm run test:watch`) подставляют `NODE_OPTIONS=--no-experimental-webstorage`,
+   поэтому тесты зелёные на Node 22 и 26.
 9. **Нет i18n.** 344 строковых кандидата в 30 файлах, текст захардкожен в JSX и в константах.
-10. **Нет CI.** Тесты и линт запускаются только руками.
+10. ~~**Нет CI.**~~ **Исправлено в Фазе 0:** `.github/workflows/ci.yml`, Node 22, lint → typecheck → test → build.
 
 ## Как запускать
 
 ```bash
 npm ci
 npm run dev        # http://localhost:5173
-npm test           # 167 тестов (на Node 26 — с NODE_OPTIONS=--no-experimental-webstorage)
+npm test           # 165 тестов (флаг --no-experimental-webstorage уже в скрипте)
 npm run lint
 npm run typecheck
 npm run build      # dist/
+npm run tauri:build  # deb + AppImage в src-tauri/target/release/bundle/
 ```
