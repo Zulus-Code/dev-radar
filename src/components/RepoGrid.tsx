@@ -1,5 +1,6 @@
 import { useEffect, useRef, memo } from 'react'
 import type { Repository } from '../types/github'
+import type { StarDelta } from '../lib/trends'
 import type { DeveloperFilter } from '../hooks/useFilters'
 import RepoCard from './RepoCard'
 import { useI18n } from '../hooks/useI18n'
@@ -17,6 +18,7 @@ interface RepoGridProps {
   fetchNextPage: () => void
   onTopicClick: (topic: string) => void
   activeDeveloperFilters?: DeveloperFilter[]
+  deltas?: Map<number, StarDelta>
 }
 
 const RepoGrid = memo(function RepoGrid({
@@ -28,6 +30,7 @@ const RepoGrid = memo(function RepoGrid({
   fetchNextPage,
   onTopicClick,
   activeDeveloperFilters = [],
+  deltas,
 }: RepoGridProps) {
   const { t } = useI18n()
   const sentinelRef = useRef<HTMLDivElement>(null)
@@ -98,7 +101,7 @@ const RepoGrid = memo(function RepoGrid({
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {repos.map((repo) => (
-          <RepoCard key={repo.id} repo={repo} onTopicClick={onTopicClick} activeDeveloperFilters={activeDeveloperFilters} />
+          <RepoCard key={repo.id} repo={repo} onTopicClick={onTopicClick} activeDeveloperFilters={activeDeveloperFilters} delta={deltas?.get(repo.id) ?? null} />
         ))}
       </div>
       {hasNextPage && autoFetchAllowed && (

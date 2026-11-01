@@ -6,7 +6,7 @@ import { TIME_RANGES } from './constants'
 import { OSI_LICENSE_IDS } from './licenseLegend'
 import type { TimeRange } from './constants'
 
-export type SortField = 'stars' | 'forks' | 'updated' | 'best_match'
+export type SortField = 'stars' | 'forks' | 'updated' | 'best_match' | 'growing'
 export type SortOrder = 'asc' | 'desc'
 
 const DATE_FNS_LOCALES: Record<Lang, Locale> = { en: enUS, ru }
@@ -127,6 +127,8 @@ export function getAPISortField(field: SortField): string | undefined {
     forks: 'forks',
     updated: 'updated',
     best_match: undefined,
+    // Delta ranking happens client-side; stars keeps the pages worth ranking.
+    growing: 'stars',
   }
   return mapping[field]
 }

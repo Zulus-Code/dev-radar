@@ -1,7 +1,9 @@
 import type { Repository } from '../types/github'
+import type { StarDelta } from '../lib/trends'
 import LanguageBadge from './LanguageBadge'
 import LicenseBadge from './LicenseBadge'
 import { formatDecimal, formatNumber, formatRelativeTime } from '../lib/utils'
+import { formatDeltaBadge } from '../lib/trends'
 import { evaluateDeveloperFilter } from '../lib/developerFilters'
 import type { DeveloperFilter } from '../hooks/useFilters'
 import { useBookmarked, useIsInAnyCollection, useCollections } from '../hooks/usePersonalization'
@@ -17,9 +19,10 @@ interface RepoCardProps {
   repo: Repository
   onTopicClick: (topic: string) => void
   activeDeveloperFilters?: DeveloperFilter[]
+  delta?: StarDelta | null
 }
 
-const RepoCard = memo(function RepoCard({ repo, onTopicClick, activeDeveloperFilters = [] }: RepoCardProps) {
+const RepoCard = memo(function RepoCard({ repo, onTopicClick, activeDeveloperFilters = [], delta = null }: RepoCardProps) {
   const { t, lang } = useI18n()
   const bookmarked = useBookmarked(repo.fullName)
   const isInAnyCollection = useIsInAnyCollection(repo.fullName)
@@ -163,6 +166,18 @@ const RepoCard = memo(function RepoCard({ repo, onTopicClick, activeDeveloperFil
         <span className="flex items-center gap-1" title={t('repo.openIssuesTitle', { count: formatDecimal(repo.openIssues, lang) })}>
           <IssueIcon />
           {formatNumber(repo.openIssues, lang)}
+        </span>
+        <span
+          className={`flex items-center gap-1 font-medium ${
+            delta && delta.delta > 0
+              ? 'text-green-400'
+              : delta && delta.delta < 0
+                ? 'text-red-400'
+                : ''
+          }`}
+          title={t('repo.growthTitle')}
+        >
+          {formatDeltaBadge(delta, lang)}
         </span>
         <span className="ml-auto text-xs" title={repo.pushedAt}>
           {formatRelativeTime(repo.pushedAt, lang)}

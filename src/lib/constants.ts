@@ -15,6 +15,7 @@ export const SORT_OPTIONS: { field: SortField; label: TranslationKey; icon: stri
   { field: 'stars', label: 'sort.mostStarred', icon: '⭐' },
   { field: 'forks', label: 'sort.mostForked', icon: '🍴' },
   { field: 'updated', label: 'sort.recentlyUpdated', icon: '🕐' },
+  { field: 'growing', label: 'sort.growing', icon: '📈' },
 ] as const
 
 export const COMMON_LICENSES = [

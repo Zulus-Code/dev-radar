@@ -1,15 +1,17 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useFilters } from '../hooks/useFilters'
 import { useSort } from '../hooks/useSort'
 import { useRepos } from '../hooks/useRepos'
+import { useTrendDeltas } from '../hooks/useTrendDeltas'
 import { useTheme } from '../hooks/useTheme'
 import { useI18n } from '../hooks/useI18n'
 import { usePersonalization } from '../hooks/usePersonalization'
 import { useAuthRevision } from '../hooks/useAuth'
 import { SORT_OPTIONS } from '../lib/constants'
 import { fetchCoreRateLimit } from '../lib/github'
+import { formatWindowLabel, windowFromDeltas } from '../lib/trends'
 import type { SortState } from '../hooks/useSort'
 import RepoGrid from '../components/RepoGrid'
 import { formatNumber } from '../lib/utils'
@@ -70,6 +72,28 @@ function Home() {
     staleTime: 60_000,
     retry: false,
   })
+
+  const repoIds = useMemo(() => repos.map((repo) => repo.id), [repos])
+  const deltas = useTrendDeltas(repoIds)
+  const deltaWindow = useMemo(() => windowFromDeltas(deltas), [deltas])
+
+  const orderedRepos = useMemo(() => {
+    if (sort.field !== 'growing') return repos
+    const ranked = repos.filter((repo) => deltas.has(repo.id))
+    const unranked = repos.filter((repo) => !deltas.has(repo.id))
+    ranked.sort((a, b) => {
+      const deltaA = deltas.get(a.id)?.delta ?? 0
+      const deltaB = deltas.get(b.id)?.delta ?? 0
+      return sort.order === 'asc' ? deltaA - deltaB : deltaB - deltaA
+    })
+    // No history means no delta: those repos keep their place at the end.
+    return [...ranked, ...unranked]
+  }, [repos, deltas, sort.field, sort.order])
+
+  const growingLabel =
+    deltaWindow === null
+      ? t('sort.growing')
+      : `${t('sort.growing')} — ${formatWindowLabel(deltaWindow, lang)}`
 
   const displayRateLimit = coreRateLimit || rateLimit
 
@@ -200,7 +224,7 @@ function Home() {
               >
                 {SORT_OPTIONS.map((option) => (
                   <option key={option.field} value={option.field}>
-                    {option.icon} {t(option.label)}
+                    {option.icon} {option.field === 'growing' ? growingLabel : t(option.label)}
                   </option>
                 ))}
               </select>
@@ -266,7 +290,8 @@ function Home() {
           )}
 
           <RepoGrid
-            repos={repos}
+            repos={orderedRepos}
+            deltas={deltas}
             hasNextPage={hasNextPage}
             isFetchingNextPage={isFetchingNextPage}
             isLoading={isLoading}
