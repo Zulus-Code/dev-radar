@@ -11,6 +11,7 @@ import RepoStatsRow from './RepoStatsRow'
 import TopicChipList from './TopicChipList'
 import EmptyState from './EmptyState'
 import { ChevronUpIcon, TrashIcon, CloseIcon, CollectionIcon } from './Icons'
+import { openExternal } from '../lib/openExternal'
 
 interface CollectionsPanelProps {
   isOpen: boolean
@@ -198,6 +199,10 @@ function CollectionsPanel({ isOpen, onClose, onTopicClick }: CollectionsPanelPro
                                     href={repo?.htmlUrl || `https://github.com/${fullName}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    onClick={(event) => {
+                                      event.preventDefault()
+                                      openExternal(repo?.htmlUrl || `https://github.com/${fullName}`)
+                                    }}
                                     className="text-sm font-semibold text-github-accent hover:underline truncate block"
                                   >
                                     {fullName}

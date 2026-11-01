@@ -4,6 +4,7 @@ import { useTheme } from '../hooks/useTheme'
 import { getToken, setGitHubToken, clearGitHubToken } from '../lib/authStore'
 import { validateToken } from '../lib/github'
 import { SunIcon, MoonIcon, BackArrowIcon } from '../components/Icons'
+import { openExternal } from '../lib/openExternal'
 
 function Settings() {
   const [token, setToken] = useState('')
@@ -85,6 +86,10 @@ function Settings() {
               href="https://github.com/settings/tokens"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(event) => {
+                event.preventDefault()
+                openExternal('https://github.com/settings/tokens')
+              }}
               className="text-github-accent hover:underline"
             >
               github.com/settings/tokens

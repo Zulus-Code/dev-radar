@@ -12,6 +12,7 @@ import RepoStatsRow from './RepoStatsRow'
 import TopicChipList from './TopicChipList'
 import EmptyState from './EmptyState'
 import { BookmarkIcon, BookmarkOutlineIcon } from './Icons'
+import { openExternal } from '../lib/openExternal'
 
 interface BookmarksPanelProps {
   isOpen: boolean
@@ -95,6 +96,10 @@ function BookmarksPanel({ isOpen, onClose, onTopicClick }: BookmarksPanelProps) 
                       href={repo?.htmlUrl || `https://github.com/${bookmark.fullName}`}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(event) => {
+                        event.preventDefault()
+                        openExternal(repo?.htmlUrl || `https://github.com/${bookmark.fullName}`)
+                      }}
                       className="text-sm font-semibold text-github-accent hover:underline truncate block"
                     >
                       {bookmark.fullName}

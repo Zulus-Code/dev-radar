@@ -10,6 +10,7 @@ import { useClickOutside } from '../hooks/useClickOutside'
 import { useState, useRef, useMemo, memo } from 'react'
 import { StarIcon, ForkIcon, BookmarkIcon, FolderIcon, CheckmarkIcon, PullRequestIcon, IssueIcon } from './Icons'
 import TopicChipList from './TopicChipList'
+import { openExternal } from '../lib/openExternal'
 
 interface RepoCardProps {
   repo: Repository
@@ -49,6 +50,10 @@ const RepoCard = memo(function RepoCard({ repo, onTopicClick, activeDeveloperFil
               href={repo.htmlUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(event) => {
+                event.preventDefault()
+                openExternal(repo.htmlUrl)
+              }}
               className="text-lg font-semibold text-github-accent hover:underline truncate block"
             >
               {repo.fullName}
