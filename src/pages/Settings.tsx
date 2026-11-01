@@ -1,10 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTheme } from '../hooks/useTheme'
 import { useI18n } from '../hooks/useI18n'
+import { usePersonalization } from '../hooks/usePersonalization'
+import { useTrendsRevision } from '../hooks/useTrendDeltas'
 import { getToken, setGitHubToken, clearGitHubToken } from '../lib/authStore'
 import { validateToken } from '../lib/github'
-import { formatDecimal } from '../lib/utils'
+import { formatDecimal, formatRelativeTime } from '../lib/utils'
+import { getTrendStatus, isTauri } from '../lib/trendsStore'
+import { savePreferences } from '../lib/userPreferences'
 import { LANGUAGES } from '../lib/i18n'
 import { SunIcon, MoonIcon, BackArrowIcon } from '../components/Icons'
 import { openExternal } from '../lib/openExternal'
@@ -16,7 +20,25 @@ function Settings() {
   const [isValidating, setIsValidating] = useState(false)
   const [hasExistingToken, setHasExistingToken] = useState(() => getToken() !== null)
   const { theme, toggleTheme } = useTheme()
-  const { t, lang, setLang } = useI18n()
+  const { t, tPlural, lang, setLang } = useI18n()
+  const { prefs } = usePersonalization()
+  const trendsRevision = useTrendsRevision()
+  const trendsAvailable = isTauri()
+  const [trendStatus, setTrendStatus] = useState<{
+    tracked: number
+    lastSyncAt: string | null
+  } | null>(null)
+
+  useEffect(() => {
+    if (!trendsAvailable) return
+    let cancelled = false
+    void getTrendStatus().then((status) => {
+      if (!cancelled) setTrendStatus(status)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [trendsAvailable, trendsRevision])
 
   const handleSave = async () => {
     const trimmed = token.trim()
@@ -145,6 +167,41 @@ function Settings() {
           {tokenError && (
             <p className="text-sm text-red-400" role="alert">
               {tokenError}
+            </p>
+          )}
+        </section>
+
+        <section className="p-6 bg-github-darker border border-github-border rounded-xl space-y-4">
+          <h2 className="text-lg font-semibold text-github-text">{t('settings.trendsHeading')}</h2>
+          {trendsAvailable ? (
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={prefs.statsEnabled}
+                onChange={(event) => savePreferences({ statsEnabled: event.target.checked })}
+                className="h-4 w-4 accent-github-accent focus:outline-none focus:ring-2 focus:ring-github-accent"
+              />
+              <span className="text-sm text-github-text">{t('settings.statsEnabled')}</span>
+            </label>
+          ) : (
+            <p className="text-sm text-github-muted">{t('settings.trendsUnavailable')}</p>
+          )}
+          <p className="text-sm text-github-muted">{t('settings.statsEnabledHelp')}</p>
+          <div className="space-y-2 text-sm text-github-muted">
+            <p>
+              {tPlural('settings.trackedRepos', trendStatus?.tracked ?? 0)}
+            </p>
+            <p>
+              {t('settings.lastSync', {
+                time: trendStatus?.lastSyncAt
+                  ? formatRelativeTime(trendStatus.lastSyncAt, lang)
+                  : '—',
+              })}
+            </p>
+          </div>
+          {trendsAvailable && !hasExistingToken && (
+            <p className="text-sm text-yellow-400" role="status">
+              {t('settings.trendsTokenHint')}
             </p>
           )}
         </section>
