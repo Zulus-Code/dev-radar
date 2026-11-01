@@ -5,6 +5,7 @@ import { useI18n } from '../hooks/useI18n'
 import { getToken, setGitHubToken, clearGitHubToken } from '../lib/authStore'
 import { validateToken } from '../lib/github'
 import { formatDecimal } from '../lib/utils'
+import { LANGUAGES } from '../lib/i18n'
 import { SunIcon, MoonIcon, BackArrowIcon } from '../components/Icons'
 import { openExternal } from '../lib/openExternal'
 
@@ -15,7 +16,7 @@ function Settings() {
   const [isValidating, setIsValidating] = useState(false)
   const [hasExistingToken, setHasExistingToken] = useState(() => getToken() !== null)
   const { theme, toggleTheme } = useTheme()
-  const { t, lang } = useI18n()
+  const { t, lang, setLang } = useI18n()
 
   const handleSave = async () => {
     const trimmed = token.trim()
@@ -79,6 +80,29 @@ function Settings() {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-2xl space-y-8">
+        <section className="p-6 bg-github-darker border border-github-border rounded-xl space-y-4">
+          <h2 className="text-lg font-semibold text-github-text">{t('settings.languageHeading')}</h2>
+          <p className="text-sm text-github-muted">{t('settings.languageHelp')}</p>
+          <div className="flex gap-2" role="group" aria-label={t('settings.languageHeading')}>
+            {LANGUAGES.map(({ code, label }) => (
+              <button
+                key={code}
+                onClick={() => setLang(code)}
+                aria-pressed={lang === code}
+                // shortcut: interface language lives in localStorage for now;
+                // Phase 3 moves it into the SQLite settings table with the rest of the prefs.
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-github-accent ${
+                  lang === code
+                    ? 'bg-github-accent text-white'
+                    : 'bg-github-border text-github-muted hover:text-github-text'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </section>
+
         <section className="p-6 bg-github-darker border border-github-border rounded-xl space-y-4">
           <h2 className="text-lg font-semibold text-github-text">{t('settings.tokenHeading')}</h2>
           <p className="text-sm text-github-muted">
