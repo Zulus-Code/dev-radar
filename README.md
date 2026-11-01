@@ -41,6 +41,24 @@ Discover repositories updated in the last **24 hours**, **7 days**, or
 | 🍴 **Most Forked**        | Descending by fork count            |
 | 🕐 **Recently Updated**   | Last push date descending           |
 | ✨ **Best Match**         | GitHub relevance ranking            |
+| 📈 **Growing**            | Star delta from local snapshots     |
+
+### 📈 Star Growth
+
+GitHub has no trending API, so Dev Radar records its own history: a Tauri-side
+SQLite database (`dev-radar.db` in the app data directory) keeps one star
+snapshot per tracked repository per day.
+
+- Tracks what you actually see (30 days) ∪ the top 300 of the default filters,
+  capped at 2,000 repositories
+- Syncs on app start, at most once every 6 hours, via batched GraphQL
+  (`nodes(ids:)`, 50 per request); snapshots older than 180 days are pruned
+- **Growing** sorts by the 7-day star delta, falling back to the whole
+  available period and labeling the real window («за неделю» / «за 3 дн.»)
+- Cards show `+412★/нед` / `+412★/wk`, or `—` without history
+- Requires a Personal Access Token; snapshots are pruned, history never leaves
+  your machine, and **Settings → Star history** can pause collection while
+  keeping what was collected
 
 ### 🔍 Filters
 
@@ -113,6 +131,7 @@ relative dates and compact numbers follow the selected locale.
 | **Testing**       | Vitest 4 + React Testing Library + MSW 2                |
 | **Linting**       | ESLint 10 with typescript-eslint                        |
 | **Desktop Shell** | Tauri 2 (Linux: deb + AppImage)                         |
+| **Local Storage** | SQLite via `tauri-plugin-sql` (star snapshots)          |
 
 ---
 
@@ -142,6 +161,7 @@ src/
 │   ├── useI18n.ts                 # i18n context accessor
 │   ├── useClickOutside.ts         # Detect clicks outside an element
 │   ├── useRepos.ts                # TanStack Query infinite data hook
+│   ├── useTrendDeltas.ts          # Star deltas for the repos on screen
 │   ├── useFilters.ts              # URL-synced, validated filter state
 │   ├── useSort.ts                 # URL-synced, validated sort state
 │   ├── usePersonalization.ts      # Preference store hooks + selectors
@@ -157,6 +177,9 @@ src/
 │   ├── licenseLegend.ts           # Open source license guide
 │   ├── readmeLanguage.ts          # English README detection
 │   ├── openExternal.ts            # Open links in system browser (Tauri aware)
+│   ├── trends.ts                  # Delta window, badges, tracking set (pure)
+│   ├── trendsStore.ts             # SQLite access, no-ops outside Tauri
+│   ├── trendsSync.ts              # Startup sync: tracking set + GraphQL batches
 │   └── userPreferences.ts         # Preference store + CRUD
 ├── pages/
 │   ├── Home.tsx                   # Main trending feed
@@ -296,9 +319,11 @@ The token is stored in **`localStorage`** and sent **only** to GitHub API endpoi
 
 ## Testing
 
-183 tests covering store logic, URL validation, query building, pagination,
-component rendering, filter logic, language detection, and i18n (dictionary
-parity, Russian plurals, locale resolution, live language switching).
+220 tests covering store logic, URL validation, query building, pagination,
+component rendering, filter logic, language detection, i18n (dictionary
+parity, Russian plurals, locale resolution, live language switching), and the
+trend helpers (delta windows, badge formatting, GraphQL batching, tracking-set
+cap and eviction).
 
 ```bash
 # Run all tests
@@ -351,7 +376,7 @@ npm run lint
 | 0     | CI on Node 22, drop sort options the API cannot honour                | ✅ done |
 | 1     | Native Tauri 2 shell, `.deb` + AppImage, external links to the browser | ✅ done |
 | 2     | Russian UI with a ru/en switch                                        | ✅ done |
-| 3     | SQLite star snapshots — real star deltas instead of "recently pushed" | planned |
+| 3     | SQLite star snapshots — real star deltas instead of "recently pushed" | ✅ done |
 | 4     | Filter presets and per-preset themes                                  | planned |
 | 5     | Release publishing, autostart, packaging polish                       | planned |
 

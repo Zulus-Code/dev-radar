@@ -117,4 +117,19 @@ describe('RepoCard', () => {
     )
     expect(screen.getByText('Beginner-friendly')).toBeInTheDocument()
   })
+
+  it('renders the star growth badge for a weekly delta', () => {
+    render(<RepoCard repo={mockRepo} onTopicClick={vi.fn()} delta={{ delta: 412, days: 7 }} />)
+    expect(screen.getByText('+412★/wk')).toBeInTheDocument()
+  })
+
+  it('renders a negative delta with a minus', () => {
+    render(<RepoCard repo={mockRepo} onTopicClick={vi.fn()} delta={{ delta: -38, days: 1 }} />)
+    expect(screen.getByText('-38★/d')).toBeInTheDocument()
+  })
+
+  it('renders a dash when the repo has no history', () => {
+    render(<RepoCard repo={mockRepo} onTopicClick={vi.fn()} />)
+    expect(screen.getByText('—')).toBeInTheDocument()
+  })
 })
