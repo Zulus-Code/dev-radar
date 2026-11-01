@@ -86,6 +86,8 @@ All data stored in `localStorage` — no backend required.
 
 - 🌙 **Dark mode by default** with light toggle (persisted, respects
   system preference)
+- 🌐 **Russian / English interface** — instant switch in Settings, remembered
+  on the machine, date-fns relative dates and `Intl` numbers follow the choice
 - 🗂️ **Collapsible sidebar** with all filters — hamburger menu on mobile, sticky on desktop
 - ⌨️ Full keyboard navigation and ARIA labels
 - 🪟 Accessible modal panels — `role="dialog"`, Escape to close, focus moves into the dialog
@@ -118,6 +120,7 @@ src/
 ├── App.tsx                      # Route table with lazy-loaded pages
 ├── components/
 │   ├── Icons.tsx                  # SVG icon components
+│   ├── I18nProvider.tsx           # Language provider, syncs <html lang>
 │   ├── Panel.tsx                  # Reusable accessible modal panel
 │   ├── RepoCard.tsx               # Individual repo display card
 │   ├── RepoGrid.tsx               # Grid layout with infinite scroll
@@ -133,6 +136,7 @@ src/
 │   └── IgnoreListManager.tsx      # Ignore list modal
 ├── hooks/
 │   ├── useAuth.ts                 # React binding for auth revision store
+│   ├── useI18n.ts                 # i18n context accessor
 │   ├── useClickOutside.ts         # Detect clicks outside an element
 │   ├── useRepos.ts                # TanStack Query infinite data hook
 │   ├── useFilters.ts              # URL-synced, validated filter state
@@ -142,7 +146,8 @@ src/
 ├── lib/
 │   ├── authStore.ts               # PAT store with cross-tab sync
 │   ├── github.ts                  # REST + GraphQL API client
-│   ├── utils.ts                   # Formatting helpers
+│   ├── i18n.ts                    # ru/en dictionaries, plural rules, locale init
+│   ├── utils.ts                   # Formatting helpers (locale-aware)
 │   ├── constants.ts               # Options, licenses, dev filters
 │   ├── developerFilters.ts        # Client-side filter evaluation
 │   ├── languageColors.ts          # Language dot color map
@@ -288,8 +293,9 @@ The token is stored in **`localStorage`** and sent **only** to GitHub API endpoi
 
 ## Testing
 
-165 tests covering store logic, URL validation, query building, pagination,
-component rendering, filter logic, and language detection.
+182 tests covering store logic, URL validation, query building, pagination,
+component rendering, filter logic, language detection, and i18n (dictionary
+parity, Russian plurals, locale resolution, live language switching).
 
 ```bash
 # Run all tests
