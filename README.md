@@ -355,7 +355,7 @@ npm run lint
 | 4     | Filter presets and per-preset themes                                  | planned |
 | 5     | Release publishing, autostart, packaging polish                       | planned |
 
-Details and acceptance criteria: [`docs/PLAN.md`](./docs/PLAN.md).
+Details: [`docs/PLAN.md`](./docs/PLAN.md) · trend mechanics: [`docs/TRENDS.md`](./docs/TRENDS.md).
 
 ## About this fork
 

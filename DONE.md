@@ -8,6 +8,7 @@
 - [2026-11-01] Added 17 i18n tests: ru/en key parity, placeholder parity, no empty translations, Russian plural categories (1/2/5/11/21), interpolation, initial-language resolution, live switching + persistence + `<html lang>`; existing 165 tests unchanged and green (files: src/__tests__/i18n.test.ts, README.md)
 
 ## Docs
+- [2026-11-01] Added `docs/TRENDS.md` — the trend mechanics spec (SQLite schema, tracking set of 30-day seen ∪ top-300 capped at 2,000, 6-hour sync in GraphQL batches of 50, window fallback 7d → available period → none, 180-day retention, PAT requirement); PLAN.md phase 3 now points at it instead of a sketch.
 - [2026-11-01] Rewrote README for the shipped product: Dev Radar title and native screenshot, Linux install section (.deb / AppImage, FUSE caveat), clone URL corrected to Zulus-Code/dev-radar, `src-tauri/` in the project structure, roadmap table, upstream credited instead of upstream star badges; refreshed `docs/CODEBASE.md` (HashRouter, openExternal, Tauri map, 165 tests, CI defect closed); `test:watch` now carries the Node 26 flag (files: README.md, docs/CODEBASE.md, docs/screenshots/dev-radar-window.png, package.json)
 
 ## Desktop (Tauri)
