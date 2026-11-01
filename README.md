@@ -40,6 +40,18 @@ repositories by stars actually gained over the last week (or the whole available
 install), not by "recently pushed". Needs a PAT; history builds forward from the first run.
 Mechanics: [`docs/TRENDS.md`](./docs/TRENDS.md).
 
+### 🎯 Presets
+
+Three built-in starting points for idea hunting: **Young project** (created in the last 90 days,
+10–500★), **Good first issue** (has open beginner-friendly issues) and **No star leader**
+(50–2000★ niche, no dominant giant). Save your own filter + sort combination under a name, up to 20,
+and apply it with one click.
+
+### 🎨 Personal look
+
+Four accent colours (blue, violet, emerald, amber) and two densities (comfortable, compact), both
+remembered per machine.
+
 ### ✨ Sorting
 
 | Sort                     | Description                         |
@@ -326,10 +338,10 @@ The token is stored in **`localStorage`** and sent **only** to GitHub API endpoi
 
 ## Testing
 
-220 tests covering store logic, URL validation, query building, pagination,
-component rendering, filter logic, language detection, i18n (dictionary parity,
-Russian plurals, locale resolution, live switching), and the trend helpers
-(delta windows, badge formatting, GraphQL batching, tracking-set cap and eviction).
+245 tests covering store logic, URL validation, query building (including the
+`stars`, `created` and `good-first-issues` qualifiers), pagination, component rendering,
+filter logic, presets (built-in params, user round-trip, name limits), appearance
+persistence, language detection, i18n and the trend helpers.
 
 ```bash
 # Run all tests
@@ -383,7 +395,7 @@ npm run lint
 | 1     | Native Tauri 2 shell, `.deb` + AppImage, external links to the browser | ✅ done |
 | 2     | Russian UI with a ru/en switch                                        | ✅ done |
 | 3     | SQLite star snapshots — real star deltas instead of "recently pushed" | ✅ done |
-| 4     | Filter presets and per-preset themes                                  | planned |
+| 4     | Filter presets and per-preset themes                                  | ✅ done |
 | 5     | Release publishing, autostart, packaging polish                       | planned |
 
 Details: [`docs/PLAN.md`](./docs/PLAN.md) · trend mechanics: [`docs/TRENDS.md`](./docs/TRENDS.md).

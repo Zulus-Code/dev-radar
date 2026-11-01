@@ -1,7 +1,7 @@
 # Карта кода dev-radar
 
-Снимок на 2026-11-01 (ветка `feat/trends-sqlite`). 8 388 строк TS/TSX,
-220 тестов в 15 файлах, плюс Rust-оболочка Tauri (~80 строк с миграциями).
+Снимок на 2026-11-01 (ветка `feat/presets-themes`). 9 214 строк TS/TSX,
+245 тестов в 17 файлах, плюс Rust-оболочка Tauri (~80 строк с миграциями).
 Механика трендов описана в [`TRENDS.md`](./TRENDS.md).
 
 ## Структура
@@ -32,6 +32,8 @@ src/
 │   ├── useAuth.ts           # ревизия токена для инвалидации кэша
 │   ├── useTheme.ts          # dark/light, localStorage 'theme'
 │   ├── useTrendDeltas.ts    # дельты звёзд для текущей выдачи (SQLite, Tauri-only)
+│   ├── usePresets.ts        # встроенные + пользовательские пресеты в localStorage
+│   ├── useAppearance.ts     # акцент/плотность, применяются к DOM
 │   └── useClickOutside.ts
 ├── lib/
 │   ├── github.ts            # REST search + GraphQL enrichment (362 строки)
@@ -46,9 +48,11 @@ src/
 │   ├── trends.ts            # окно дельты, формат бейджа, выбор окна для подписи
 │   ├── trendsStore.ts       # SQLite: снапшоты, трекинг-набор, дельты (no-op вне Tauri)
 │   ├── trendsSync.ts        # синк GraphQL пачками по 50, ретеншен 180 дней
+│   ├── presets.ts           # встроенные пресеты + сериализация в search-params
+│   ├── appearance.ts        # акцент и плотность через CSS-переменные
 │   ├── licenseLegend.ts, languageColors.ts
 │   └── types/…              # типы REST-ответов и нормализованной модели
-├── __tests__/               # 15 файлов, 220 тестов (Vitest + RTL + MSW)
+├── __tests__/               # 17 файлов, 245 тестов (Vitest + RTL + MSW)
 ```
 
 Оболочка:
@@ -156,7 +160,7 @@ UI (FilterSidebar / сортировка)
 ```bash
 npm ci
 npm run dev        # http://localhost:5173
-npm test           # 220 тестов (флаг --no-experimental-webstorage уже в скрипте)
+npm test           # 245 тестов (флаг --no-experimental-webstorage уже в скрипте)
 npm run lint
 npm run typecheck
 npm run build      # dist/
