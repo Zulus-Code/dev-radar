@@ -84,6 +84,9 @@ All data stored in `localStorage` — no backend required.
 
 ### 🎨 UI & Accessibility
 
+Interface in **Russian and English** (auto-detected from the system locale, switchable in Settings);
+relative dates and compact numbers follow the selected locale.
+
 - 🌙 **Dark mode by default** with light toggle (persisted, respects
   system preference)
 - 🌐 **Russian / English interface** — instant switch in Settings, remembered
@@ -293,7 +296,7 @@ The token is stored in **`localStorage`** and sent **only** to GitHub API endpoi
 
 ## Testing
 
-182 tests covering store logic, URL validation, query building, pagination,
+183 tests covering store logic, URL validation, query building, pagination,
 component rendering, filter logic, language detection, and i18n (dictionary
 parity, Russian plurals, locale resolution, live language switching).
 
@@ -347,7 +350,7 @@ npm run lint
 |-------|-----------------------------------------------------------------------|---------|
 | 0     | CI on Node 22, drop sort options the API cannot honour                | ✅ done |
 | 1     | Native Tauri 2 shell, `.deb` + AppImage, external links to the browser | ✅ done |
-| 2     | Russian UI with a ru/en switch                                        | next    |
+| 2     | Russian UI with a ru/en switch                                        | ✅ done |
 | 3     | SQLite star snapshots — real star deltas instead of "recently pushed" | planned |
 | 4     | Filter presets and per-preset themes                                  | planned |
 | 5     | Release publishing, autostart, packaging polish                       | planned |

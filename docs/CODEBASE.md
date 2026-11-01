@@ -1,7 +1,7 @@
 # Карта кода dev-radar
 
-Снимок на 2026-11-01 (коммит `03a8872`, ветка `master`). 6 148 строк TS/TSX в 56 файлах,
-165 тестов в 13 файлах, плюс 13 строк Rust-оболочки Tauri.
+Снимок на 2026-11-01 (коммит `2a0ac2b`, ветка `feat/i18n-ru`). 7 163 строки TS/TSX,
+183 теста в 14 файлах, плюс 13 строк Rust-оболочки Tauri.
 
 ## Структура
 
@@ -40,9 +40,10 @@ src/
 │   ├── userPreferences.ts   # букмарки/коллекции/топики/ignore в localStorage
 │   ├── readmeLanguage.ts    # эвристика «README на английском»
 │   ├── openExternal.ts      # внешние ссылки: opener в Tauri, window.open в браузере
+│   ├── i18n.ts              # словари ru/en, t(), плюрализация Intl.PluralRules
 │   ├── licenseLegend.ts, languageColors.ts
 │   └── types/…              # типы REST-ответов и нормализованной модели
-├── __tests__/               # 13 файлов, 165 тестов (Vitest + RTL + MSW)
+├── __tests__/               # 14 файлов, 183 теста (Vitest + RTL + MSW)
 ```
 
 Оболочка:
@@ -84,6 +85,7 @@ UI (FilterSidebar / сортировка)
 | `github_token` | PAT открытым текстом | `lib/authStore.ts` |
 | `github_dashboard_preferences` | букмарки, коллекции, подписки, ignore-листы | `lib/userPreferences.ts` |
 | `theme` | `dark`/`light` | `hooks/useTheme.ts` |
+| `dev_radar_language` | `ru`/`en` | `lib/i18n.ts` |
 
 Синхронизация между вкладками — через `storage`-событие. Серверной части нет.
 
@@ -101,7 +103,7 @@ UI (FilterSidebar / сортировка)
 |---|---|
 | ~~HashRouter для Tauri~~ | ~~`src/App.tsx`~~ — сделано в Фазе 1 |
 | ~~Внешние ссылки в системный браузер~~ | ~~`src/lib/openExternal.ts`~~ — сделано в Фазе 1 (4 места) |
-| i18n | новый `src/lib/i18n.ts` + 30 файлов с текстом (см. `PLAN.md`, Фаза 2) |
+| ~~i18n~~ | ~~новый `src/lib/i18n.ts` + 30 файлов~~ — сделано в Фазе 2 |
 | Настоящие тренды | `lib/github.ts` (источник), `hooks/useRepos.ts` (сортировка), `RepoCard.tsx` (бейдж), новый слой SQLite |
 | Свои пресеты фильтров | `lib/constants.ts` + `hooks/useFilters.ts` (URL-схема уже расширяемая) |
 | Хранение токена вне localStorage | `lib/authStore.ts` — единственная точка чтения/записи |
@@ -127,7 +129,7 @@ UI (FilterSidebar / сортировка)
 8. **Тесты и Node 26.** Node 26 притащил экспериментальный `localStorage`, который перебивает jsdom.
    Оба скрипта (`npm test`, `npm run test:watch`) подставляют `NODE_OPTIONS=--no-experimental-webstorage`,
    поэтому тесты зелёные на Node 22 и 26.
-9. **Нет i18n.** 344 строковых кандидата в 30 файлах, текст захардкожен в JSX и в константах.
+9. ~~**Нет i18n.**~~ **Исправлено в Фазе 2:** `lib/i18n.ts` (196 ключей, ru/en), переключатель в настройках, локаль для дат и чисел.
 10. ~~**Нет CI.**~~ **Исправлено в Фазе 0:** `.github/workflows/ci.yml`, Node 22, lint → typecheck → test → build.
 
 ## Как запускать
@@ -135,7 +137,7 @@ UI (FilterSidebar / сортировка)
 ```bash
 npm ci
 npm run dev        # http://localhost:5173
-npm test           # 165 тестов (флаг --no-experimental-webstorage уже в скрипте)
+npm test           # 183 теста (флаг --no-experimental-webstorage уже в скрипте)
 npm run lint
 npm run typecheck
 npm run build      # dist/
